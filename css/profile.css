@@ -1,0 +1,448 @@
+/* ========================================
+   PROFILE PAGE STYLES
+======================================== */
+
+.profile-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 100vh;
+}
+
+/* Header du profil */
+.profile-header {
+  text-align: center;
+  margin-bottom: 32px;
+  margin-top: 60px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+}
+
+.avatar svg {
+  width: 50px;
+  height: 50px;
+  color: white;
+}
+
+.avatar-initial {
+  font-size: 42px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+}
+
+.profile-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+}
+
+.profile-email {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+/* Card du profil */
+.profile-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+/* Sections */
+.profile-section {
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.profile-section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 16px 0;
+}
+
+/* Lignes d'info */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.info-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-all;
+}
+
+/* Badge de statut */
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge.verified {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34c759;
+}
+
+.status-badge.unverified {
+  background: rgba(255, 149, 0, 0.15);
+  color: #ff9500;
+}
+
+/* Club favori */
+.club-display {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.club-placeholder {
+  text-align: center;
+}
+
+.club-placeholder span {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.club-placeholder p {
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 16px 0;
+  font-size: 15px;
+}
+
+.btn-select-club {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-select-club:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Club sélectionné */
+.club-selected {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.club-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: white;
+  padding: 8px;
+}
+
+.club-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.club-info {
+  flex: 1;
+}
+
+.club-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 4px 0;
+}
+
+.club-league,
+.club-abbr {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* Bouton modifier club */
+.btn-edit-club {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-edit-club:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Formulaire de club */
+.club-form {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.club-form .form-group {
+  margin-bottom: 20px;
+}
+
+.club-form .form-group:last-of-type {
+  margin-bottom: 24px;
+}
+
+.club-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+
+.club-form input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.club-form input[type="text"]:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.club-form input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Upload logo */
+.logo-upload {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.logo-preview span {
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.logo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+.btn-upload {
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  color: #667eea;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-upload:hover {
+  background: rgba(102, 126, 234, 0.3);
+}
+
+/* Boutons du formulaire */
+.form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-cancel {
+  flex: 1;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-save {
+  flex: 1;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Hidden class */
+.hidden {
+  display: none !important;
+}
+
+/* Actions */
+.actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  width: 100%;
+}
+
+.btn-action svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-logout {
+  background: rgba(255, 59, 48, 0.15);
+  color: #ff3b30;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 59, 48, 0.25);
+}
+
+.btn-logout:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 20px 16px;
+  }
+
+  .profile-header {
+    margin-top: 50px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar-initial {
+    font-size: 34px;
+  }
+
+  .profile-name {
+    font-size: 24px;
+  }
+
+  .profile-section {
+    padding: 20px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .info-value {
+    text-align: left;
+    max-width: 100%;
+  }
+}

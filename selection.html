@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choisir une affiche - Post Match Generator</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/selection.css">
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <!-- Background -->
+  <div class="bg-gradient"></div>
+  <div class="bg-grid"></div>
+
+  <!-- Content -->
+  <div class="content">
+    <a href="index.html" class="btn-back">← Retour</a>
+    <a href="index.html" class="btn-profile" title="Connectez-vous pour accéder à votre profil">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      Profil
+    </a>
+
+    <div class="header">
+      <h1 class="main-title">Choisir une affiche</h1>
+      <p class="subtitle">Sélectionnez le modèle que vous souhaitez utiliser</p>
+    </div>
+
+    <div class="grid-container">
+
+      <!-- Affiche Num 1 - Disponible -->
+      <a href="editor.html" class="affiche-card">
+        <div class="affiche-preview preview-num1">
+          <span class="badge badge-available">Disponible</span>
+        </div>
+        <div class="affiche-info">
+          <div class="affiche-title">Num 1</div>
+          <div class="affiche-desc">Affiche classique avec score</div>
+        </div>
+      </a>
+
+      <!-- Affiche Num 2 - A venir -->
+      <div class="affiche-card disabled">
+        <div class="affiche-preview preview-coming-soon">
+          <span class="badge badge-soon">Bientôt</span>
+          <span class="lock-icon"></span>
+        </div>
+        <div class="affiche-info">
+          <div class="affiche-title">Num 2</div>
+          <div class="affiche-desc">Prochainement disponible</div>
+        </div>
+      </div>
+
+      <!-- Affiche Num 3 - A venir -->
+      <div class="affiche-card disabled">
+        <div class="affiche-preview preview-coming-soon">
+          <span class="badge badge-soon">Bientôt</span>
+          <span class="lock-icon"></span>
+        </div>
+        <div class="affiche-info">
+          <div class="affiche-title">Num 3</div>
+          <div class="affiche-desc">Prochainement disponible</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const btnProfile = document.querySelector('.btn-profile');
+
+    // Vérifier l'état de connexion au chargement
+    (async () => {
+      const session = await getSession();
+
+      if (session) {
+        // Utilisateur connecté
+        const user = session.user;
+        const nomUtilisateur = user.user_metadata?.nom_utilisateur || user.email.split('@')[0];
+
+        btnProfile.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          ${nomUtilisateur}
+        `;
+        btnProfile.href = 'profile.html';
+        btnProfile.title = 'Voir mon profil';
+      } else if (estModeInvite()) {
+        // Mode invité
+        btnProfile.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Invité
+        `;
+        btnProfile.href = 'index.html';
+        btnProfile.title = 'Connectez-vous pour accéder à votre profil';
+      } else {
+        // Pas connecté et pas en mode invité - rediriger
+        window.location.href = 'index.html';
+      }
+    })();
+  </script>
+
+</body>
+</html>

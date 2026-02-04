@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un compte - Post Match Generator</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/register.css">
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <!-- Background -->
+  <div class="bg-gradient"></div>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Content -->
+  <div class="register-container content">
+
+    <!-- Logo -->
+    <div class="logo-container">
+      <div class="logo-icon">⚽</div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="main-title">Créez votre compte</h1>
+    <p class="subtitle">Commencez à créer des visuels professionnels</p>
+
+    <!-- Register Card -->
+    <div class="register-card">
+
+      <!-- Form Fields -->
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="" required>
+      </div>
+
+      <!-- Club Info -->
+      <div class="form-group">
+        <label for="clubName">Nom du club</label>
+        <input type="text" id="clubName" placeholder="Ex: Paris Saint-Germain" required>
+      </div>
+
+      <div class="form-group">
+        <label for="clubAbbr">Abréviation</label>
+        <input type="text" id="clubAbbr" placeholder="Ex: PSG" maxlength="5" required>
+      </div>
+
+      <div class="form-group">
+        <label>Logo du club</label>
+        <div class="logo-upload">
+          <div class="logo-preview" id="logoPreview">
+            <span>+</span>
+          </div>
+          <input type="file" id="clubLogo" accept="image/*" hidden>
+          <button type="button" class="btn-upload" id="btnUploadLogo">Choisir une image</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="" required>
+          <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <div class="password-hint">Minimum 8 caractères</div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <div class="password-wrapper">
+          <input type="password" id="confirmPassword" placeholder="" required>
+          <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">J'accepte les <a href="#" class="terms-link">Conditions d'utilisation</a> et la <a href="#" class="terms-link">Politique de confidentialité</a></label>
+      </div>
+
+      <!-- Register Button -->
+      <button class="btn-register" onclick="register()">Créer un compte</button>
+
+      <!-- Guest Button -->
+      <a href="selection.html" class="btn-guest">
+        Continuer en tant qu'invité
+        <span class="arrow">→</span>
+      </a>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      Vous avez déjà un compte ? <a href="index.html">Connectez-vous</a>
+    </div>
+
+  </div>
+
+  <!-- Version -->
+  <p class="version">v1.0</p>
+
+  <!-- JavaScript -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/clubs-supabase.js"></script>
+  <script>
+    // Toggle password visibility
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+
+      // Change icon (oeil barré quand visible, oeil ouvert quand masqué)
+      btn.innerHTML = isPassword ? `
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      ` : `
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      `;
+    }
+
+    // Éléments du DOM
+    const emailInput = document.getElementById('email');
+    const clubNameInput = document.getElementById('clubName');
+    const clubAbbrInput = document.getElementById('clubAbbr');
+    const clubLogoInput = document.getElementById('clubLogo');
+    const logoPreview = document.getElementById('logoPreview');
+    const btnUploadLogo = document.getElementById('btnUploadLogo');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const termsCheckbox = document.getElementById('terms');
+    const btnRegister = document.querySelector('.btn-register');
+    const btnGuest = document.querySelector('.btn-guest');
+
+    let clubLogoBase64 = null;
+
+    // Upload logo
+    btnUploadLogo.addEventListener('click', () => clubLogoInput.click());
+
+    clubLogoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          clubLogoBase64 = event.target.result;
+          logoPreview.innerHTML = `<img src="${clubLogoBase64}" alt="Logo">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Abréviation en majuscules
+    clubAbbrInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+
+    // Message d'erreur
+    function afficherErreur(message) {
+      const ancienMessage = document.querySelector('.error-message');
+      if (ancienMessage) ancienMessage.remove();
+
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.style.cssText = 'background: rgba(255,59,48,0.1); border: 1px solid rgba(255,59,48,0.3); color: #ff3b30; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 14px;';
+      errorDiv.textContent = message;
+
+      btnRegister.parentNode.insertBefore(errorDiv, btnRegister);
+    }
+
+    // Message de succès
+    function afficherSucces(message) {
+      const ancienMessage = document.querySelector('.error-message, .success-message');
+      if (ancienMessage) ancienMessage.remove();
+
+      const successDiv = document.createElement('div');
+      successDiv.className = 'success-message';
+      successDiv.style.cssText = 'background: rgba(52,199,89,0.1); border: 1px solid rgba(52,199,89,0.3); color: #34c759; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 14px;';
+      successDiv.textContent = message;
+
+      btnRegister.parentNode.insertBefore(successDiv, btnRegister);
+    }
+
+    // Inscription
+    async function register() {
+      const email = emailInput.value.trim();
+      const clubName = clubNameInput.value.trim();
+      const clubAbbr = clubAbbrInput.value.trim().toUpperCase();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      // Validations
+      if (!email || !clubName || !clubAbbr || !password || !confirmPassword) {
+        afficherErreur('Veuillez remplir tous les champs');
+        return;
+      }
+
+      if (password.length < 6) {
+        afficherErreur('Le mot de passe doit contenir au moins 6 caractères');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        afficherErreur('Les mots de passe ne correspondent pas');
+        return;
+      }
+
+      if (!termsCheckbox.checked) {
+        afficherErreur('Veuillez accepter les conditions d\'utilisation');
+        return;
+      }
+
+      // Désactiver le bouton
+      btnRegister.disabled = true;
+      btnRegister.textContent = 'Création...';
+
+      // Créer le compte avec le nom du club comme nom d'utilisateur
+      const result = await inscription(email, password, clubName);
+
+      if (result.success) {
+        // Récupérer l'ID de l'utilisateur nouvellement créé
+        const userId = result.data.user?.id;
+
+        // Ajouter le club dans Supabase
+        const clubData = {
+          nom: clubName,
+          abbr: clubAbbr,
+          logo: clubLogoBase64
+        };
+
+        console.log('Ajout du club:', clubData, 'userId:', userId);
+        const clubResult = await ajouterClub(clubData, userId);
+        console.log('Résultat ajout club:', clubResult);
+
+        if (clubResult.success) {
+          // Définir comme club favori avec l'ID utilisateur
+          if (userId) {
+            console.log('Définition club favori pour userId:', userId, 'clubId:', clubResult.data.id);
+            const favResult = await setClubFavoriSupabase(clubResult.data.id, userId);
+            console.log('Résultat setClubFavori:', favResult);
+          }
+
+          // Sauvegarder en localStorage
+          const club = {
+            id: clubResult.data.id,
+            nom: clubResult.data.nom,
+            abbr: clubResult.data.abbr,
+            logo: clubResult.data.logo || clubLogoBase64
+          };
+          localStorage.setItem('monClub', JSON.stringify(club));
+          console.log('Club sauvegardé en localStorage:', club);
+        } else {
+          console.error('Erreur ajout club:', clubResult.error);
+        }
+
+        afficherSucces('Compte créé ! Vérifiez votre email pour confirmer.');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 3000);
+      } else {
+        afficherErreur(traduireErreur(result.error));
+        btnRegister.disabled = false;
+        btnRegister.textContent = 'Créer un compte';
+      }
+    }
+
+    // Mode invité
+    btnGuest.addEventListener('click', (e) => {
+      e.preventDefault();
+      activerModeInvite();
+    });
+
+    // Inscription avec Entrée
+    confirmPasswordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') register();
+    });
+  </script>
+
+</body>
+</html>

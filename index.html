@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post Match Generator</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/index.css">
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <!-- Background -->
+  <div class="bg-gradient"></div>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Content -->
+  <div class="login-container content">
+
+    <!-- Logo -->
+    <div class="logo-container">
+      <div class="logo-icon">⚽</div>
+    </div>
+
+    <!-- Title -->
+    <h1 class="main-title">Connectez-vous à votre compte</h1>
+
+    <!-- Login Card -->
+    <div class="login-card">
+
+      <!-- Form Fields -->
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="" required>
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label for="password">Mot de passe</label>
+          <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+        </div>
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="" required>
+          <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remember me -->
+      <div class="checkbox-group">
+        <input type="checkbox" id="remember" checked>
+        <label for="remember">Se souvenir de moi sur cet appareil</label>
+      </div>
+
+      <!-- Login Button -->
+      <button class="btn-login" onclick="login()">Connexion</button>
+
+      <!-- Register Link -->
+      <div class="register-link">
+        Vous découvrez Post Match Generator ? <br> <a href="register.html">Créez un compte</a>
+      </div>
+
+      <!-- Guest Button -->
+      <a href="selection.html" class="btn-guest">
+        Continuer en tant qu'invité
+        <span class="arrow">→</span>
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- Version -->
+  <p class="version">v1.0</p>
+
+  <!-- JavaScript -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Toggle password visibility
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+
+      // Change icon (oeil barré quand visible, oeil ouvert quand masqué)
+      btn.innerHTML = isPassword ? `
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      ` : `
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      `;
+    }
+
+    // Éléments du DOM
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const btnLogin = document.querySelector('.btn-login');
+    const btnGuest = document.querySelector('.btn-guest');
+
+    // Message d'erreur
+    function afficherErreur(message) {
+      // Supprimer l'ancien message s'il existe
+      const ancienMessage = document.querySelector('.error-message');
+      if (ancienMessage) ancienMessage.remove();
+
+      // Créer le nouveau message
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.style.cssText = 'background: rgba(255,59,48,0.1); border: 1px solid rgba(255,59,48,0.3); color: #ff3b30; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 14px;';
+      errorDiv.textContent = message;
+
+      // Insérer avant le bouton de connexion
+      btnLogin.parentNode.insertBefore(errorDiv, btnLogin);
+    }
+
+    // Message de succès
+    function afficherSucces(message) {
+      const ancienMessage = document.querySelector('.error-message, .success-message');
+      if (ancienMessage) ancienMessage.remove();
+
+      const successDiv = document.createElement('div');
+      successDiv.className = 'success-message';
+      successDiv.style.cssText = 'background: rgba(52,199,89,0.1); border: 1px solid rgba(52,199,89,0.3); color: #34c759; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 14px;';
+      successDiv.textContent = message;
+
+      btnLogin.parentNode.insertBefore(successDiv, btnLogin);
+    }
+
+    // Connexion email/mot de passe
+    async function login() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        afficherErreur('Veuillez remplir tous les champs');
+        return;
+      }
+
+      // Désactiver le bouton pendant le chargement
+      btnLogin.disabled = true;
+      btnLogin.textContent = 'Connexion...';
+
+      const result = await connexion(email, password);
+
+      if (result.success) {
+        afficherSucces('Connexion réussie ! Redirection...');
+        setTimeout(() => {
+          window.location.href = 'selection.html';
+        }, 1000);
+      } else {
+        afficherErreur(traduireErreur(result.error));
+        btnLogin.disabled = false;
+        btnLogin.textContent = 'Connexion';
+      }
+    }
+
+    // Mode invité
+    btnGuest.addEventListener('click', (e) => {
+      e.preventDefault();
+      activerModeInvite();
+    });
+
+    // Connexion avec Entrée
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+
+    // Vérifier si déjà connecté
+    (async () => {
+      const session = await getSession();
+      if (session) {
+        window.location.href = 'selection.html';
+      }
+    })();
+  </script>
+
+</body>
+</html>
