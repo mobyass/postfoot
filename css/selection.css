@@ -24,6 +24,57 @@ body {
   font-weight: 400;
 }
 
+/* Boutons en haut à droite */
+.top-right-buttons {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.btn-pricing-top,
+.btn-profile-inline {
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-pricing-top svg,
+.btn-profile-inline svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-pricing-top:hover {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+  border-color: rgba(245, 87, 108, 0.4);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 87, 108, 0.3);
+}
+
+.btn-profile-inline:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: rgba(102, 126, 234, 0.4);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
 /* Grille */
 .grid-container {
   display: grid;
@@ -387,6 +438,113 @@ body {
   box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
+/* Premium Card */
+.premium-card {
+  border: 2px solid rgba(245, 87, 108, 0.4);
+  background: linear-gradient(135deg, rgba(245, 87, 108, 0.05) 0%, rgba(240, 147, 251, 0.05) 100%);
+}
+
+.premium-card:hover {
+  border-color: rgba(245, 87, 108, 0.6);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(245, 87, 108, 0.3),
+    0 0 40px rgba(245, 87, 108, 0.2);
+}
+
+.preview-premium {
+  background: linear-gradient(180deg, rgba(245, 87, 108, 0.3) 0%, rgba(240, 147, 251, 0.2) 100%);
+  flex-direction: column;
+  gap: 16px;
+}
+
+.premium-icon {
+  width: 60px;
+  height: 60px;
+  stroke: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s;
+}
+
+.premium-card:hover .premium-icon {
+  stroke: white;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px rgba(245, 87, 108, 0.5));
+}
+
+.badge-premium {
+  background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+}
+
+/* Custom User Template Card */
+.custom-user-card {
+  border: 2px solid rgba(17, 153, 142, 0.5);
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.05) 100%);
+}
+
+.custom-user-card:hover {
+  border-color: rgba(17, 153, 142, 0.8);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(17, 153, 142, 0.3),
+    0 0 40px rgba(17, 153, 142, 0.2);
+}
+
+.preview-custom-user {
+  background: linear-gradient(180deg, rgba(17, 153, 142, 0.3) 0%, rgba(56, 239, 125, 0.15) 100%);
+  flex-direction: column;
+  gap: 16px;
+}
+
+.custom-icon {
+  width: 60px;
+  height: 60px;
+  stroke: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s;
+}
+
+.custom-user-card:hover .custom-icon {
+  stroke: white;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px rgba(17, 153, 142, 0.5));
+}
+
+.badge-custom-user {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+/* Bouton Tarifs */
+.btn-pricing {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 40px auto 0;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.btn-pricing:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.btn-pricing svg {
+  width: 20px;
+  height: 20px;
+}
+
 /* Responsive */
 @media (max-width: 700px) {
   .main-title {
@@ -404,6 +562,20 @@ body {
     margin-bottom: 20px;
     top: 0;
     left: 0;
+  }
+
+  .top-right-buttons {
+    position: relative;
+    top: 0;
+    right: 0;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .btn-pricing-top,
+  .btn-profile-inline {
+    padding: 10px 14px;
+    font-size: 12px;
   }
 
   .header {

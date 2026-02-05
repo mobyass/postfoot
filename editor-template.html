@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editeur Personnalise - Post Match Generator</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- html2canvas -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <!-- CSS personnalise pour ce template -->
+  <link rel="stylesheet" href="css/editor-TEMPLATE_ID.css">
+
+  <style>
+    /* Protection - ecran de chargement */
+    .access-check {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .access-check.hidden { display: none; }
+    .access-denied {
+      color: #ff3b30;
+      font-size: 18px;
+      text-align: center;
+    }
+    .loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Ecran de verification d'acces -->
+<div class="access-check" id="accessCheck">
+  <div class="loader"></div>
+  <p style="color: rgba(255,255,255,0.5);">Verification de l'acces...</p>
+</div>
+
+<!-- Background -->
+<div class="bg-gradient"></div>
+<div class="bg-grid"></div>
+
+<a href="selection.html" class="btn-back fixed">← Retour</a>
+<a href="profile.html" class="btn-profile fixed">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+  Profil
+</a>
+
+<h1 class="main-title">Editeur Personnalise</h1>
+
+<div class="layout">
+
+  <!-- ===== VISUEL PERSONNALISE ===== -->
+  <div class="visual-container">
+    <div class="base" id="capture">
+      <!--
+        ZONE PERSONNALISABLE
+        Remplacer ce contenu par le visuel du client
+      -->
+      <img id="bgImage" class="bg-image">
+
+      <div class="info info1" id="info1">LIGUE 1</div>
+      <div class="info AvsB" id="matchTitle">Equipe A - Equipe B</div>
+      <div class="info info2" id="info2">JOURNEE 13</div>
+
+      <div class="rouge"></div>
+      <div class="texte">FULLTIME</div>
+
+      <div class="degrader"></div>
+      <div class="vertA" id="logoA"></div>
+      <div class="vertB" id="logoB"></div>
+      <div class="scoreA" id="displayScoreA">0</div>
+      <div class="trait">-</div>
+      <div class="scoreB" id="displayScoreB">0</div>
+    </div>
+  </div>
+
+  <!-- ===== CONTROLS ===== -->
+  <div class="controls">
+
+    <!-- Equipes -->
+    <div class="control-block">
+      <div class="control-title">Equipe A</div>
+      <div class="team-display-v1" id="teamA-display">
+        <div class="team-logo-preview empty-logo" id="teamA-logo"></div>
+        <div class="team-info">
+          <div class="team-name" id="teamA-name">Aucune equipe</div>
+          <button id="teamA-btn">Choisir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-block">
+      <div class="control-title">Equipe B</div>
+      <div class="team-display-v1" id="teamB-display">
+        <div class="team-logo-preview empty-logo" id="teamB-logo"></div>
+        <div class="team-info">
+          <div class="team-name" id="teamB-name">Aucune equipe</div>
+          <button id="teamB-btn">Choisir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score -->
+    <div class="control-block">
+      <div class="control-title">Score</div>
+      <div class="score-container">
+        <input type="number" id="scoreA" min="0" max="99" value="0" class="score-input">
+        <span class="score-separator">-</span>
+        <input type="number" id="scoreB" min="0" max="99" value="0" class="score-input">
+      </div>
+    </div>
+
+    <!-- Infos -->
+    <div class="control-block">
+      <div class="control-title">Informations</div>
+      <input type="text" id="inputInfo1" placeholder="Ligue / Competition" value="LIGUE 1" class="input-field">
+      <input type="text" id="inputInfo2" placeholder="Journee / Date" value="JOURNEE 13" class="input-field">
+    </div>
+
+    <!-- Export -->
+    <div class="control-block">
+      <div class="control-title">Exporter</div>
+      <button id="btnExport" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Telecharger l'image
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL SELECTION EQUIPE -->
+<div class="modal" id="clubModal">
+  <div class="modal-content">
+    <button class="modal-close-x" id="closeModalX">&times;</button>
+    <div id="searchView">
+      <div class="modal-title">Choisir une equipe</div>
+      <input type="text" class="club-search" id="clubSearchModal" placeholder="Rechercher une equipe...">
+      <div class="club-list" id="clubListModal"></div>
+      <button class="btn-add-club" id="btnShowAddClub">+ Ajouter un nouveau club</button>
+    </div>
+    <div id="addClubView" class="hidden">
+      <div class="modal-title">Ajouter un club</div>
+      <input type="text" id="newClubName" placeholder="Nom du club" class="input-field">
+      <input type="text" id="newClubAbbr" placeholder="Abreviation (3-4 lettres)" class="input-field" maxlength="4">
+      <div class="logo-upload-section">
+        <label class="logo-upload-label">
+          <span id="logoUploadText">Choisir un logo</span>
+          <input type="file" id="newClubLogo" accept="image/*" hidden>
+        </label>
+        <div class="logo-preview-small" id="newLogoPreview"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btnCancelAdd">Annuler</button>
+        <button class="btn btn-primary" id="btnConfirmAdd">Ajouter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/clubs.js"></script>
+
+<script>
+  // ========== CONFIGURATION DU TEMPLATE ==========
+  // IMPORTANT: Remplacer par l'ID du template
+  const TEMPLATE_ID = 'TEMPLATE_ID';
+
+  // ========== VERIFICATION D'ACCES ==========
+  (async () => {
+    const accessCheck = document.getElementById('accessCheck');
+
+    const session = await getSession();
+
+    if (!session) {
+      // Pas connecte
+      accessCheck.innerHTML = `
+        <div class="access-denied">
+          <p>Vous devez etre connecte pour acceder a ce template.</p>
+          <a href="index.html" class="btn btn-primary" style="margin-top: 20px;">Se connecter</a>
+        </div>
+      `;
+      return;
+    }
+
+    // Verifier l'acces au template
+    const { data: profile } = await supabaseClient
+      .from('user_profiles')
+      .select('has_custom_template, custom_template_id')
+      .eq('id', session.user.id)
+      .single();
+
+    if (!profile?.has_custom_template || profile?.custom_template_id !== TEMPLATE_ID) {
+      // Pas autorise
+      accessCheck.innerHTML = `
+        <div class="access-denied">
+          <p>Vous n'avez pas acces a ce template.</p>
+          <a href="selection.html" class="btn btn-secondary" style="margin-top: 20px;">Retour</a>
+        </div>
+      `;
+      return;
+    }
+
+    // Acces autorise - masquer l'ecran de verification
+    accessCheck.classList.add('hidden');
+
+    // Initialiser l'editeur
+    initEditor();
+  })();
+
+  // ========== EDITEUR ==========
+  function initEditor() {
+    // Elements DOM
+    const bgImage = document.getElementById('bgImage');
+    const info1 = document.getElementById('info1');
+    const info2 = document.getElementById('info2');
+    const matchTitle = document.getElementById('matchTitle');
+    const logoA = document.getElementById('logoA');
+    const logoB = document.getElementById('logoB');
+    const displayScoreA = document.getElementById('displayScoreA');
+    const displayScoreB = document.getElementById('displayScoreB');
+
+    // Inputs
+    const scoreA = document.getElementById('scoreA');
+    const scoreB = document.getElementById('scoreB');
+    const inputInfo1 = document.getElementById('inputInfo1');
+    const inputInfo2 = document.getElementById('inputInfo2');
+
+    // Boutons equipes
+    const teamABtn = document.getElementById('teamA-btn');
+    const teamBBtn = document.getElementById('teamB-btn');
+    const teamAName = document.getElementById('teamA-name');
+    const teamBName = document.getElementById('teamB-name');
+    const teamALogo = document.getElementById('teamA-logo');
+    const teamBLogo = document.getElementById('teamB-logo');
+
+    // Modal
+    const clubModal = document.getElementById('clubModal');
+    const clubSearchModal = document.getElementById('clubSearchModal');
+    const clubListModal = document.getElementById('clubListModal');
+    const closeModalX = document.getElementById('closeModalX');
+    const searchView = document.getElementById('searchView');
+    const addClubView = document.getElementById('addClubView');
+    const btnShowAddClub = document.getElementById('btnShowAddClub');
+    const btnCancelAdd = document.getElementById('btnCancelAdd');
+    const btnConfirmAdd = document.getElementById('btnConfirmAdd');
+
+    // Export
+    const btnExport = document.getElementById('btnExport');
+
+    // Variables
+    let currentTeam = null;
+    let teamAData = null;
+    let teamBData = null;
+    let allClubs = [];
+
+    // Charger clubs
+    async function loadClubs() {
+      allClubs = await getClubs();
+      renderClubList(allClubs);
+    }
+    loadClubs();
+
+    // Render liste clubs
+    function renderClubList(clubs) {
+      clubListModal.innerHTML = clubs.map(club => `
+        <div class="club-item" data-id="${club.id}">
+          <div class="club-item-logo" style="background-image: url('${club.logo || ''}')"></div>
+          <div class="club-item-info">
+            <div class="club-item-name">${club.nom}</div>
+            <div class="club-item-abbr">${club.abbr || ''}</div>
+          </div>
+        </div>
+      `).join('');
+
+      // Events
+      document.querySelectorAll('.club-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const clubId = item.dataset.id;
+          const club = allClubs.find(c => c.id == clubId);
+          selectClub(club);
+        });
+      });
+    }
+
+    // Recherche
+    clubSearchModal.addEventListener('input', (e) => {
+      const search = e.target.value.toLowerCase();
+      const filtered = allClubs.filter(c =>
+        c.nom.toLowerCase().includes(search) ||
+        (c.abbr && c.abbr.toLowerCase().includes(search))
+      );
+      renderClubList(filtered);
+    });
+
+    // Ouvrir modal
+    teamABtn.addEventListener('click', () => {
+      currentTeam = 'A';
+      clubModal.classList.add('active');
+      clubSearchModal.focus();
+    });
+
+    teamBBtn.addEventListener('click', () => {
+      currentTeam = 'B';
+      clubModal.classList.add('active');
+      clubSearchModal.focus();
+    });
+
+    // Fermer modal
+    closeModalX.addEventListener('click', closeModal);
+    clubModal.addEventListener('click', (e) => {
+      if (e.target === clubModal) closeModal();
+    });
+
+    function closeModal() {
+      clubModal.classList.remove('active');
+      searchView.classList.remove('hidden');
+      addClubView.classList.add('hidden');
+      clubSearchModal.value = '';
+      renderClubList(allClubs);
+    }
+
+    // Selectionner club
+    function selectClub(club) {
+      if (currentTeam === 'A') {
+        teamAData = club;
+        teamAName.textContent = club.nom;
+        teamALogo.style.backgroundImage = club.logo ? `url('${club.logo}')` : '';
+        teamALogo.classList.toggle('empty-logo', !club.logo);
+        logoA.style.backgroundImage = club.logo ? `url('${club.logo}')` : '';
+      } else {
+        teamBData = club;
+        teamBName.textContent = club.nom;
+        teamBLogo.style.backgroundImage = club.logo ? `url('${club.logo}')` : '';
+        teamBLogo.classList.toggle('empty-logo', !club.logo);
+        logoB.style.backgroundImage = club.logo ? `url('${club.logo}')` : '';
+      }
+      updateMatchTitle();
+      closeModal();
+    }
+
+    // Mise a jour titre match
+    function updateMatchTitle() {
+      const nameA = teamAData ? teamAData.abbr || teamAData.nom : 'Equipe A';
+      const nameB = teamBData ? teamBData.abbr || teamBData.nom : 'Equipe B';
+      matchTitle.textContent = `${nameA} - ${nameB}`;
+    }
+
+    // Score
+    scoreA.addEventListener('input', () => {
+      displayScoreA.textContent = scoreA.value || '0';
+    });
+    scoreB.addEventListener('input', () => {
+      displayScoreB.textContent = scoreB.value || '0';
+    });
+
+    // Infos
+    inputInfo1.addEventListener('input', () => {
+      info1.textContent = inputInfo1.value.toUpperCase();
+    });
+    inputInfo2.addEventListener('input', () => {
+      info2.textContent = inputInfo2.value.toUpperCase();
+    });
+
+    // Ajouter club
+    btnShowAddClub.addEventListener('click', () => {
+      searchView.classList.add('hidden');
+      addClubView.classList.remove('hidden');
+    });
+
+    btnCancelAdd.addEventListener('click', () => {
+      searchView.classList.remove('hidden');
+      addClubView.classList.add('hidden');
+    });
+
+    // Logo upload pour nouveau club
+    const newClubLogo = document.getElementById('newClubLogo');
+    const newLogoPreview = document.getElementById('newLogoPreview');
+    const logoUploadText = document.getElementById('logoUploadText');
+    let newLogoData = null;
+
+    newClubLogo.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          newLogoData = e.target.result;
+          newLogoPreview.style.backgroundImage = `url('${newLogoData}')`;
+          logoUploadText.textContent = 'Logo selectionne';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    btnConfirmAdd.addEventListener('click', async () => {
+      const nom = document.getElementById('newClubName').value.trim();
+      const abbr = document.getElementById('newClubAbbr').value.trim().toUpperCase();
+
+      if (!nom) {
+        alert('Veuillez entrer un nom de club');
+        return;
+      }
+
+      const newClub = await addClub({ nom, abbr, logo: newLogoData });
+      if (newClub) {
+        allClubs.push(newClub);
+        selectClub(newClub);
+
+        // Reset form
+        document.getElementById('newClubName').value = '';
+        document.getElementById('newClubAbbr').value = '';
+        newLogoData = null;
+        newLogoPreview.style.backgroundImage = '';
+        logoUploadText.textContent = 'Choisir un logo';
+      }
+    });
+
+    // Export
+    btnExport.addEventListener('click', async () => {
+      const capture = document.getElementById('capture');
+      btnExport.disabled = true;
+      btnExport.textContent = 'Generation...';
+
+      try {
+        const canvas = await html2canvas(capture, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null
+        });
+
+        const link = document.createElement('a');
+        const nameA = teamAData ? teamAData.abbr || teamAData.nom : 'A';
+        const nameB = teamBData ? teamBData.abbr || teamBData.nom : 'B';
+        link.download = `${nameA}-${nameB}_${scoreA.value}-${scoreB.value}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        console.error('Erreur export:', err);
+        alert('Erreur lors de l\'export');
+      }
+
+      btnExport.disabled = false;
+      btnExport.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Telecharger l'image
+      `;
+    });
+  }
+</script>
+
+</body>
+</html>

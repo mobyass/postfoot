@@ -25,13 +25,24 @@
   <!-- Content -->
   <div class="content">
     <a href="index.html" class="btn-back">← Retour</a>
-    <a href="index.html" class="btn-profile" title="Connectez-vous pour accéder à votre profil">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-      Profil
-    </a>
+
+    <!-- Boutons en haut à droite -->
+    <div class="top-right-buttons">
+      <a href="pricing.html" class="btn-pricing-top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+          <line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+        Tarifs
+      </a>
+      <a href="index.html" class="btn-profile-inline" title="Connectez-vous pour accéder à votre profil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Profil
+      </a>
+    </div>
 
     <div class="header">
       <h1 class="main-title">Choisir une affiche</h1>
@@ -75,7 +86,22 @@
         </div>
       </div>
 
+      <!-- Template Personnalisé -->
+      <a href="pricing.html" class="affiche-card premium-card">
+        <div class="affiche-preview preview-premium">
+          <span class="badge badge-premium">Premium</span>
+          <svg class="premium-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div class="affiche-info">
+          <div class="affiche-title">Personnalisé</div>
+          <div class="affiche-desc">Visuel sur-mesure pour votre club</div>
+        </div>
+      </a>
+
     </div>
+
   </div>
 
   <!-- Footer -->
@@ -88,6 +114,15 @@
       <div class="footer-section">
         <h3>Contact</h3>
         <ul>
+          <li>
+            <a href="pricing.html" class="footer-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+              Tarifs
+            </a>
+          </li>
           <li>
             <a href="mailto:mobyass.pdf@gmail.com" class="contact-link">
               <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -109,7 +144,9 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/auth.js"></script>
   <script>
-    const btnProfile = document.querySelector('.btn-profile');
+    const btnProfile = document.querySelector('.btn-profile-inline');
+    const gridContainer = document.querySelector('.grid-container');
+    const premiumCard = document.querySelector('.premium-card');
 
     // Vérifier l'état de connexion au chargement
     (async () => {
@@ -129,6 +166,37 @@
         `;
         btnProfile.href = 'profile.html';
         btnProfile.title = 'Voir mon profil';
+
+        // Vérifier si l'utilisateur a un template personnalisé
+        const { data: profile } = await supabaseClient
+          .from('user_profiles')
+          .select('has_custom_template, custom_template_id, custom_template_name')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.has_custom_template && profile?.custom_template_id) {
+          // Créer la carte du template personnalisé
+          const customCard = document.createElement('a');
+          customCard.href = `editor-${profile.custom_template_id}.html`;
+          customCard.className = 'affiche-card custom-user-card';
+          customCard.innerHTML = `
+            <div class="affiche-preview preview-custom-user">
+              <span class="badge badge-custom-user">Votre template</span>
+              <svg class="custom-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div class="affiche-info">
+              <div class="affiche-title">${profile.custom_template_name || 'Mon Template'}</div>
+              <div class="affiche-desc">Votre visuel personnalisé</div>
+            </div>
+          `;
+          // Insérer avant la carte premium
+          gridContainer.insertBefore(customCard, premiumCard);
+        }
+
       } else if (estModeInvite()) {
         // Mode invité
         btnProfile.innerHTML = `

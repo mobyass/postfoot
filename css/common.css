@@ -308,10 +308,34 @@ body {
   color: #667eea;
 }
 
-.footer-section .contact-link {
+.footer-section .contact-link,
+.footer-section .footer-link-icon {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.footer-section .footer-link-icon {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.footer-section .footer-link-icon:hover {
+  color: #667eea;
+}
+
+.footer-section .footer-link-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(255, 255, 255, 0.5);
+  fill: none;
+  transition: stroke 0.2s;
+}
+
+.footer-section .footer-link-icon:hover svg {
+  stroke: #667eea;
 }
 
 .footer-section .contact-link svg {
