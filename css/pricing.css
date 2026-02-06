@@ -305,6 +305,32 @@
   box-shadow: 0 12px 30px rgba(245, 87, 108, 0.4);
 }
 
+/* Plan Notes */
+.plan-note {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 11px;
+  color: rgba(102, 126, 234, 0.9);
+  font-weight: 500;
+}
+
+.plan-note a {
+  color: rgba(102, 126, 234, 1);
+  text-decoration: underline;
+}
+
+.plan-note a:hover {
+  color: white;
+}
+
+.plan-note-premium {
+  color: rgba(245, 87, 108, 0.9);
+}
+
+.plan-note-premium a {
+  color: rgba(245, 87, 108, 1);
+}
+
 /* Pricing Info */
 .pricing-info {
   text-align: center;

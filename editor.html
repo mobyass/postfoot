@@ -41,7 +41,7 @@
     <div class="base" id="capture">
       <img id="bgImage" class="bg-image">
 
-      <div class="info info1" id="info1">LIGUE 1</div>
+      <div class="info info1" id="info1">NATIONAL 1</div>
       <div class="info AvsB" id="matchTitle">Équipe A - Équipe B</div>
       <div class="info info2" id="info2">JOURNÉE 13</div>
 
@@ -175,10 +175,24 @@
     <!-- Compétition -->
     <div class="control-block">
       <div class="control-title">Compétition</div>
-      <div class="button-group">
-        <button class="active" data-competition="LIGUE 1">Ligue 1</button>
-        <button data-competition="NATIONAL 3">National 3</button>
-      </div>
+      <select id="competitionSelect" class="competition-select">
+        <optgroup label="National">
+          <option value="NATIONAL 1">National 1</option>
+          <option value="NATIONAL 2">National 2</option>
+          <option value="NATIONAL 3">National 3</option>
+        </optgroup>
+        <optgroup label="Regional">
+          <option value="REGIONAL 1">Regional 1</option>
+          <option value="REGIONAL 2">Regional 2</option>
+          <option value="REGIONAL 3">Regional 3</option>
+        </optgroup>
+        <optgroup label="Departemental">
+          <option value="DEPARTEMENTAL 1">Departemental 1</option>
+          <option value="DEPARTEMENTAL 2">Departemental 2</option>
+          <option value="DEPARTEMENTAL 3">Departemental 3</option>
+          <option value="DEPARTEMENTAL 4">Departemental 4</option>
+        </optgroup>
+      </select>
     </div>
 
     <!-- Inverser les équipes -->
@@ -258,7 +272,7 @@
       <img id="recadrageImage" class="recadrage-image">
 
       <!-- TOUS LES ÉLÉMENTS VISUELS -->
-      <div class="info info1" id="recadrage-info1">LIGUE 1</div>
+      <div class="info info1" id="recadrage-info1">NATIONAL 1</div>
       <div class="info AvsB" id="recadrage-matchTitle">Équipe A - Équipe B</div>
       <div class="info info2" id="recadrage-info2">JOURNÉE 13</div>
 

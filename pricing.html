@@ -35,19 +35,6 @@
       <p class="subtitle">Creez des visuels professionnels pour votre club</p>
     </div>
 
-    <!-- Toggle Mensuel/Annuel -->
-    <div class="billing-toggle" id="billing-toggle">
-      <span class="toggle-label" data-period="monthly">Mensuel</span>
-      <label class="toggle-switch">
-        <input type="checkbox" id="billingToggle">
-        <span class="toggle-slider"></span>
-      </label>
-      <span class="toggle-label" data-period="yearly">
-        Annuel
-        <span class="save-badge">-17%</span>
-      </span>
-    </div>
-
     <!-- Pricing Cards -->
     <div class="pricing-grid">
 
@@ -77,11 +64,11 @@
         <div class="card-header">
           <h2 class="plan-name">Base de donnees</h2>
           <div class="plan-price">
-            <span class="price" data-monthly="3,99" data-yearly="39,99">3,99</span>
+            <span class="price">39,99</span>
             <span class="currency">EUR</span>
-            <span class="period" data-monthly="/mois" data-yearly="/an">/mois</span>
+            <span class="period">/an</span>
           </div>
-          <div class="yearly-note" style="display: none;">
+          <div class="yearly-note">
             <span>soit 3,33EUR/mois</span>
           </div>
         </div>
@@ -92,7 +79,8 @@
           <li><span class="check">OK</span> Logos, noms, abreviations inclus</li>
           <li class="disabled"><span class="x">X</span> Visuel personnalise</li>
         </ul>
-        <a href="https://buy.stripe.com/14A6oJakyeXPdHd8SJ2VG03" class="btn-plan btn-pro" id="btn-pro" data-monthly="https://buy.stripe.com/14A6oJakyeXPdHd8SJ2VG03" data-yearly="https://buy.stripe.com/bJe6oJeAO3f7av11qh2VG04" target="_blank">S'abonner</a>
+        <a href="https://buy.stripe.com/bJe6oJeAO3f7av11qh2VG04" class="btn-plan btn-pro" target="_blank">S'abonner</a>
+        <p class="plan-note">Disponible sous 7 jours apres souscription</p>
       </div>
 
       <!-- Premium -->
@@ -101,11 +89,11 @@
         <div class="card-header">
           <h2 class="plan-name">Premium</h2>
           <div class="plan-price">
-            <span class="price" data-monthly="9,99" data-yearly="99,99">9,99</span>
+            <span class="price">99,99</span>
             <span class="currency">EUR</span>
-            <span class="period" data-monthly="/mois" data-yearly="/an">/mois</span>
+            <span class="period">/an</span>
           </div>
-          <div class="yearly-note" style="display: none;">
+          <div class="yearly-note">
             <span>soit 8,33EUR/mois</span>
           </div>
         </div>
@@ -116,14 +104,15 @@
           <li><span class="check">OK</span> Visuel personnalise pour votre club</li>
           <li><span class="check">OK</span> Support prioritaire</li>
         </ul>
-        <a href="https://buy.stripe.com/eVq5kF78m3f75aHc4V2VG01" class="btn-plan btn-premium" id="btn-premium" data-monthly="https://buy.stripe.com/eVq5kF78m3f75aHc4V2VG01" data-yearly="https://buy.stripe.com/6oUfZjcsG3f75aH8SJ2VG02" target="_blank">S'abonner</a>
+        <a href="https://buy.stripe.com/6oUfZjcsG3f75aH8SJ2VG02" class="btn-plan btn-premium" target="_blank">S'abonner</a>
+        <p class="plan-note plan-note-premium">Contactez-nous par <a href="mailto:mobyass.pdf@gmail.com">email</a> apres paiement</p>
       </div>
 
     </div>
 
     <!-- FAQ ou infos -->
     <div class="pricing-info">
-      <p>Abonnement sans engagement - Annulez a tout moment</p>
+      <p>Paiement unique - Acces valable 1 an</p>
     </div>
 
   </div>
@@ -168,14 +157,6 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/auth.js"></script>
   <script>
-    const billingToggleEl = document.getElementById('billing-toggle');
-    const billingToggle = document.getElementById('billingToggle');
-    const prices = document.querySelectorAll('.price[data-monthly]');
-    const periods = document.querySelectorAll('.period[data-monthly]');
-    const yearlyNotes = document.querySelectorAll('.yearly-note');
-    const toggleLabels = document.querySelectorAll('.toggle-label');
-    const btnPro = document.getElementById('btn-pro');
-    const btnPremium = document.getElementById('btn-premium');
     const cardFree = document.getElementById('card-free');
     const cardPro = document.getElementById('card-pro');
     const cardPremium = document.getElementById('card-premium');
@@ -189,14 +170,12 @@
       if (session) {
         // Utilisateur connecte : afficher seulement Pro et Premium
         cardFree.style.display = 'none';
-        billingToggleEl.style.display = 'flex';
         pricingInfo.style.display = 'block';
       } else if (isGuest) {
         // Mode invite : afficher seulement Gratuit
         cardFree.style.display = 'block';
         cardPro.style.display = 'none';
         cardPremium.style.display = 'none';
-        billingToggleEl.style.display = 'none';
         pricingInfo.innerHTML = '<p>Creez un compte pour acceder aux offres payantes</p>';
       } else {
         // Pas connecte, pas invite : afficher tout
@@ -205,41 +184,6 @@
         cardPremium.style.display = 'block';
       }
     })();
-
-    billingToggle.addEventListener('change', () => {
-      const isYearly = billingToggle.checked;
-
-      // Mettre a jour les prix
-      prices.forEach(price => {
-        price.textContent = isYearly ? price.dataset.yearly : price.dataset.monthly;
-      });
-
-      // Mettre a jour les periodes
-      periods.forEach(period => {
-        period.textContent = isYearly ? period.dataset.yearly : period.dataset.monthly;
-      });
-
-      // Afficher/masquer les notes annuelles
-      yearlyNotes.forEach(note => {
-        note.style.display = isYearly ? 'block' : 'none';
-      });
-
-      // Mettre a jour les labels actifs
-      toggleLabels.forEach(label => {
-        if (label.dataset.period === 'yearly') {
-          label.classList.toggle('active', isYearly);
-        } else {
-          label.classList.toggle('active', !isYearly);
-        }
-      });
-
-      // Mettre a jour les liens Stripe
-      if (btnPro) btnPro.href = isYearly ? btnPro.dataset.yearly : btnPro.dataset.monthly;
-      if (btnPremium) btnPremium.href = isYearly ? btnPremium.dataset.yearly : btnPremium.dataset.monthly;
-    });
-
-    // Initialiser avec mensuel actif
-    toggleLabels[0].classList.add('active');
   </script>
 
 </body>

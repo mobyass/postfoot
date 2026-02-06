@@ -145,16 +145,14 @@ document.addEventListener('DOMContentLoaded', function () {
   // =====================
   // COMPETITION
   // =====================
-  document.querySelectorAll('[data-competition]').forEach(btn => {
-    btn.addEventListener("click", e => {
-      const comp = e.target.dataset.competition;
+  const competitionSelect = document.getElementById("competitionSelect");
+  if (competitionSelect) {
+    competitionSelect.addEventListener("change", e => {
+      const comp = e.target.value;
       info1.textContent = comp;
       recadrageInfo1.textContent = comp;
-      e.target.parentElement.querySelectorAll("button")
-        .forEach(b => b.classList.remove("active"));
-      e.target.classList.add("active");
     });
-  });
+  }
 
   // =====================
   // MODAL SELECTION
