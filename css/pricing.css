@@ -100,11 +100,17 @@
 
 /* Pricing Grid */
 .pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 24px;
   max-width: 1000px;
   margin: 0 auto;
+}
+
+.pricing-card {
+  flex: 0 1 300px;
+  max-width: 320px;
 }
 
 /* Pricing Card */
