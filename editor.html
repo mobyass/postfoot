@@ -84,60 +84,6 @@
       </div>
     </div>
 
-    <!-- MODAL SÉLECTION ÉQUIPE -->
-    <div class="modal" id="clubModal">
-      <div class="modal-content">
-        <button class="modal-close-x" id="closeModalX">×</button>
-
-        <!-- Vue recherche -->
-        <div id="searchView">
-          <div class="modal-title">Choisir une équipe</div>
-          <input type="text" class="club-search" id="clubSearchModal" placeholder="Rechercher une équipe...">
-          <div class="club-list" id="clubListModal"></div>
-          <button class="btn-add-club" id="btnShowAddClub">+ Ajouter un nouveau club</button>
-          <a href="pricing.html" class="btn-database-modal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <ellipse cx="12" cy="5" rx="9" ry="3"/>
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-            </svg>
-            Obtenir tous les clubs pré-remplis
-          </a>
-        </div>
-
-        <!-- Vue ajout club -->
-        <div id="addClubView" class="hidden">
-          <div class="modal-title">Ajouter un club</div>
-          <div class="add-club-form">
-            <div class="form-group">
-              <label>Nom du club</label>
-              <input type="text" id="newClubName" placeholder="Ex: Real Madrid">
-            </div>
-            <div class="form-group">
-              <label>Abréviation</label>
-              <input type="text" id="newClubAbbr" placeholder="Ex: RMA" maxlength="5">
-            </div>
-            <div class="form-group">
-              <label>Logo du club</label>
-              <div class="logo-upload-mini">
-                <div class="logo-preview-mini" id="newClubLogoPreview">
-                  <span>+</span>
-                </div>
-                <input type="file" id="newClubLogoInput" accept="image/*" hidden>
-                <button class="btn-upload-mini" id="btnUploadNewLogo">Choisir</button>
-              </div>
-            </div>
-            <div class="form-actions-modal">
-              <button class="btn-cancel-modal" id="btnCancelAddClub">Annuler</button>
-              <button class="btn-save-modal" id="btnSaveNewClub">Ajouter</button>
-            </div>
-          </div>
-        </div>
-
-        <button class="modal-close" id="closeModal">Fermer</button>
-      </div>
-    </div>
-
     <!-- Scores -->
     <div class="control-block">
       <div class="control-title">Score Équipe A</div>
@@ -256,6 +202,35 @@
 
   </div>
 
+</div>
+
+<!-- MODAL SÉLECTION ÉQUIPE -->
+<div class="modal" id="clubModal">
+  <div class="modal-content">
+    <button class="modal-close-x" id="closeModalX">&times;</button>
+    <div id="searchView">
+      <div class="modal-title">Choisir une équipe</div>
+      <input type="text" class="club-search" id="clubSearchModal" placeholder="Rechercher une équipe...">
+      <div class="club-list" id="clubListModal"></div>
+      <button class="btn-add-club" id="btnShowAddClub">+ Ajouter un nouveau club</button>
+    </div>
+    <div id="addClubView" class="hidden">
+      <div class="modal-title">Ajouter un club</div>
+      <input type="text" id="newClubName" placeholder="Nom du club" class="input-field">
+      <input type="text" id="newClubAbbr" placeholder="Abreviation (3-4 lettres)" class="input-field" maxlength="4">
+      <div class="logo-upload-section">
+        <label class="logo-upload-label">
+          <span id="logoUploadText">Choisir un logo</span>
+          <input type="file" id="newClubLogo" accept="image/*" hidden>
+        </label>
+        <div class="logo-preview-small" id="newLogoPreview"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btnCancelAdd">Annuler</button>
+        <button class="btn btn-primary" id="btnConfirmAdd">Ajouter</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL RECADRAGE -->

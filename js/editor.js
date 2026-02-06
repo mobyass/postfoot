@@ -160,7 +160,6 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById("teamA-btn").addEventListener("click", () => openModal("A"));
   document.getElementById("teamB-btn").addEventListener("click", () => openModal("B"));
 
-  document.getElementById("closeModal").addEventListener("click", closeModal);
   document.getElementById("closeModalX").addEventListener("click", closeModal);
 
   modal.addEventListener("click", e => {
@@ -745,13 +744,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchView = document.getElementById("searchView");
   const addClubView = document.getElementById("addClubView");
   const btnShowAddClub = document.getElementById("btnShowAddClub");
-  const btnCancelAddClub = document.getElementById("btnCancelAddClub");
-  const btnSaveNewClub = document.getElementById("btnSaveNewClub");
+  const btnCancelAdd = document.getElementById("btnCancelAdd");
+  const btnConfirmAdd = document.getElementById("btnConfirmAdd");
   const newClubNameInput = document.getElementById("newClubName");
   const newClubAbbrInput = document.getElementById("newClubAbbr");
-  const newClubLogoInput = document.getElementById("newClubLogoInput");
-  const newClubLogoPreview = document.getElementById("newClubLogoPreview");
-  const btnUploadNewLogo = document.getElementById("btnUploadNewLogo");
+  const newClubLogo = document.getElementById("newClubLogo");
+  const newLogoPreview = document.getElementById("newLogoPreview");
+  const logoUploadText = document.getElementById("logoUploadText");
 
   let newClubLogoBase64 = null;
 
@@ -762,28 +761,26 @@ document.addEventListener('DOMContentLoaded', function () {
     newClubNameInput.value = "";
     newClubAbbrInput.value = "";
     newClubLogoBase64 = null;
-    newClubLogoPreview.innerHTML = "<span>+</span>";
+    newLogoPreview.style.backgroundImage = "";
+    if (logoUploadText) logoUploadText.textContent = "Choisir un logo";
     newClubNameInput.focus();
   });
 
   // Annuler l'ajout
-  btnCancelAddClub.addEventListener("click", () => {
+  btnCancelAdd.addEventListener("click", () => {
     addClubView.classList.add("hidden");
     searchView.classList.remove("hidden");
   });
 
   // Upload logo
-  btnUploadNewLogo.addEventListener("click", () => {
-    newClubLogoInput.click();
-  });
-
-  newClubLogoInput.addEventListener("change", (e) => {
+  newClubLogo.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
         newClubLogoBase64 = event.target.result;
-        newClubLogoPreview.innerHTML = `<img src="${newClubLogoBase64}" alt="Logo">`;
+        newLogoPreview.style.backgroundImage = `url('${newClubLogoBase64}')`;
+        if (logoUploadText) logoUploadText.textContent = "Logo selectionne";
       };
       reader.readAsDataURL(file);
     }
@@ -795,7 +792,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Sauvegarder le nouveau club
-  btnSaveNewClub.addEventListener("click", async () => {
+  btnConfirmAdd.addEventListener("click", async () => {
     const nom = newClubNameInput.value.trim();
     const abbr = newClubAbbrInput.value.trim().toUpperCase();
 
@@ -810,8 +807,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Désactiver le bouton
-    btnSaveNewClub.disabled = true;
-    btnSaveNewClub.textContent = "Ajout...";
+    btnConfirmAdd.disabled = true;
+    btnConfirmAdd.textContent = "Ajout...";
 
     const club = {
       nom: nom,
@@ -852,8 +849,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Réactiver le bouton
-    btnSaveNewClub.disabled = false;
-    btnSaveNewClub.textContent = "Ajouter";
+    btnConfirmAdd.disabled = false;
+    btnConfirmAdd.textContent = "Ajouter";
   });
 
 });
