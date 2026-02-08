@@ -33,7 +33,7 @@
     <div class="pricing-header">
       <h1 class="main-title">Choisissez votre offre</h1>
       <p class="subtitle">Creez des visuels professionnels pour votre club</p>
-      <div class="promo-banner">-30% avec le code <strong>PF30</strong> pour les premiers clients</div>
+      <div class="promo-banner" id="promoBanner">-30% avec le code <strong>PF30</strong> pour les premiers clients</div>
     </div>
 
     <!-- Pricing Cards -->
@@ -162,6 +162,7 @@
     const cardPro = document.getElementById('card-pro');
     const cardPremium = document.getElementById('card-premium');
     const pricingInfo = document.querySelector('.pricing-info');
+    const promoBanner = document.getElementById('promoBanner');
 
     // Verifier l'etat de connexion
     (async () => {
@@ -177,6 +178,7 @@
         cardFree.style.display = 'block';
         cardPro.style.display = 'none';
         cardPremium.style.display = 'none';
+        promoBanner.style.display = 'none';
         pricingInfo.innerHTML = '<p>Creez un compte pour acceder aux offres payantes</p>';
       } else {
         // Pas connecte, pas invite : afficher tout
