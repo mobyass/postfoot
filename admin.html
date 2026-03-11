@@ -75,6 +75,100 @@
       color: rgba(255,255,255,0.7);
     }
 
+    /* ===== FORMULAIRE AJOUT CLUB ===== */
+    .add-club-form {
+      padding: 24px;
+    }
+
+    .add-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .add-logo-preview {
+      width: 72px;
+      height: 72px;
+      background: rgba(255,255,255,0.06);
+      border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 22px;
+      color: rgba(255,255,255,0.3);
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .add-logo-preview:hover { border-color: rgba(102,126,234,0.5); }
+    .add-logo-preview img { width: 100%; height: 100%; object-fit: contain; }
+
+    .add-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .add-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .add-field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .add-field input[type="text"] {
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .add-field input[type="text"]:focus { border-color: rgba(102,126,234,0.5); }
+
+    .color-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-row input[type="color"] {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 2px;
+      background: rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+
+    .color-row input[type="text"] {
+      flex: 1;
+    }
+
+    .add-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
     /* ===== STATS ===== */
     .stats-row {
       max-width: 1100px;
@@ -774,6 +868,7 @@
     <div class="admin-tabs">
       <button class="admin-tab active" id="tabClubs" onclick="switchSection('clubs')">Clubs</button>
       <button class="admin-tab" id="tabComptes" onclick="switchSection('comptes')">Comptes</button>
+      <button class="admin-tab" id="tabAjouter" onclick="switchSection('ajouter')">+ Ajouter</button>
     </div>
 
     <!-- Stats -->
@@ -831,6 +926,45 @@
             <tr><td colspan="4" class="loading">Chargement…</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Section Ajouter un club -->
+    <div class="section" id="sectionAjouter" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">Ajouter un club</h2>
+      </div>
+      <div class="add-club-form">
+
+        <!-- Logo -->
+        <div class="add-logo-row">
+          <div class="add-logo-preview" id="addLogoPreview" onclick="document.getElementById('addLogoInput').click()" title="Ajouter un logo">
+            <span>?</span>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.7)">Logo du club</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:4px">Cliquer pour importer (PNG, SVG…)</div>
+          </div>
+          <input type="file" id="addLogoInput" accept="image/*" style="display:none" onchange="previewAddLogo(event)">
+        </div>
+
+        <div class="add-fields">
+          <div class="add-field">
+            <label>Nom du club *</label>
+            <input type="text" id="addNom" placeholder="Ex: Olympique de Marseille">
+          </div>
+          <div class="add-field">
+            <label>Abréviation *</label>
+            <input type="text" id="addAbbr" placeholder="Ex: OM" maxlength="6" oninput="this.value=this.value.toUpperCase()">
+          </div>
+        </div>
+
+        <div id="addClubMsg" style="min-height:22px;font-size:13px;margin-top:4px"></div>
+
+        <div class="add-footer">
+          <button class="btn-save" id="btnAddClub" onclick="addClub()">Ajouter le club</button>
+        </div>
+
       </div>
     </div>
 
@@ -929,8 +1063,70 @@
     function switchSection(section) {
       document.getElementById('sectionClubs').style.display = section === 'clubs' ? '' : 'none';
       document.getElementById('sectionComptes').style.display = section === 'comptes' ? '' : 'none';
+      document.getElementById('sectionAjouter').style.display = section === 'ajouter' ? '' : 'none';
       document.getElementById('tabClubs').classList.toggle('active', section === 'clubs');
       document.getElementById('tabComptes').classList.toggle('active', section === 'comptes');
+      document.getElementById('tabAjouter').classList.toggle('active', section === 'ajouter');
+    }
+
+    // ===== AJOUT CLUB =====
+    let addLogoBase64 = null;
+
+    function previewAddLogo(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        addLogoBase64 = e.target.result;
+        document.getElementById('addLogoPreview').innerHTML = `<img src="${addLogoBase64}">`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function addClub() {
+      const nom = document.getElementById('addNom').value.trim();
+      const abbr = document.getElementById('addAbbr').value.trim();
+      const msg = document.getElementById('addClubMsg');
+
+      if (!nom || !abbr) {
+        msg.style.color = '#f87171';
+        msg.textContent = 'Le nom et l\'abréviation sont obligatoires.';
+        return;
+      }
+
+      const btn = document.getElementById('btnAddClub');
+      btn.disabled = true;
+      btn.textContent = 'Ajout…';
+      msg.textContent = '';
+
+      const { data, error } = await supabaseClient.from('clubs').insert({
+        nom,
+        nom_court: abbr,
+        logo_url: addLogoBase64 || null,
+        nb_utilisations: 0,
+        validated: false
+      }).select().single();
+
+      btn.disabled = false;
+      btn.textContent = 'Ajouter le club';
+
+      if (error) {
+        msg.style.color = '#f87171';
+        msg.textContent = 'Erreur : ' + error.message;
+        return;
+      }
+
+      msg.style.color = '#4ade80';
+      msg.textContent = `Club "${nom}" ajouté avec succès.`;
+
+      // Reset form
+      document.getElementById('addNom').value = '';
+      document.getElementById('addAbbr').value = '';
+      document.getElementById('addLogoPreview').innerHTML = '<span>?</span>';
+      addLogoBase64 = null;
+
+      // Rafraîchir la liste
+      loadClubs();
     }
 
     // ===== CHARGEMENT =====

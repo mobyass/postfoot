@@ -52,7 +52,7 @@
     <div class="grid-container">
 
       <!-- Affiche Classique - Disponible -->
-      <a href="templates/classique/editor.html" class="affiche-card">
+      <a href="templates/gratuit/classique/editor.html" class="affiche-card">
         <div class="affiche-preview preview-num1">
           <span class="badge badge-available">Disponible</span>
         </div>
@@ -63,7 +63,7 @@
       </a>
 
       <!-- Affiche Moderne - Disponible -->
-      <a href="templates/moderne/editor-moderne.html" class="affiche-card">
+      <a href="templates/gratuit/moderne/editor-moderne.html" class="affiche-card">
         <div class="affiche-preview preview-moderne">
           <span class="badge badge-available">Disponible</span>
         </div>
@@ -74,7 +74,7 @@
       </a>
 
       <!-- Affiche Minimaliste -->
-      <a href="templates/minimaliste/editor-minimaliste.html" class="affiche-card">
+      <a href="templates/gratuit/minimaliste/editor-minimaliste.html" class="affiche-card">
         <div class="affiche-preview preview-minimaliste">
           <span class="badge badge-available">Disponible</span>
         </div>
@@ -185,7 +185,7 @@
         if (profile?.has_custom_template && profile?.custom_template_id && profile?.custom_template_visible !== false) {
           // Créer la carte du template personnalisé
           const customCard = document.createElement('a');
-          customCard.href = `editor-custom.html`;
+          customCard.href = `templates/personnalise/editor-custom.html`;
           customCard.className = 'affiche-card custom-user-card';
           customCard.innerHTML = `
             <div class="affiche-preview preview-custom-user">

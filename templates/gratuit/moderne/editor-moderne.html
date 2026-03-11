@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Éditeur Moderne - Post Match Generator</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- html2canvas -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../../../css/common.css">
+  <link rel="stylesheet" href="editor-moderne.css">
+</head>
+
+<body>
+
+<a href="../../../selection.html" class="btn-back fixed">← Retour</a>
+<a href="../../../index.html" class="btn-profile fixed" title="Connectez-vous pour accéder à votre profil">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+  Profil
+</a>
+
+<h1 class="main-title">Éditeur Moderne</h1>
+
+<div class="layout">
+
+  <!-- ===== VISUEL ===== -->
+  <div class="visual-container">
+    <div class="base-moderne" id="capture">
+      <img id="bgImage" class="bg-image">
+
+      <!-- Bande SVG courbe -->
+      <div class="m-score-section">
+        <svg class="m-score-bg-svg" viewBox="0 0 416 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path id="scoreSvgPath" d="M 0 15 Q 208 65 416 15 L 416 160 L 0 160 Z" fill="#cc0000"/>
+        </svg>
+      </div>
+
+      <!-- Badge FULLTIME dans la bande -->
+      <div class="m-fulltime-badge">FULLTIME</div>
+
+      <!-- Logos et scores -->
+      <div class="vertA empty" id="logoA"></div>
+      <div class="vertB empty" id="logoB"></div>
+      <div class="scoreA" id="displayScoreA">0</div>
+      <div class="trait">-</div>
+      <div class="scoreB" id="displayScoreB">0</div>
+
+      <!-- Barre blanche du bas -->
+      <div class="m-bottom-bar">
+        <div class="info info1" id="info1">NATIONAL 1</div>
+        <div class="info AvsB" id="matchTitle">Équipe A - Équipe B</div>
+        <div class="info info2" id="info2">JOURNÉE 13</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== CONTROLS ===== -->
+  <div class="controls">
+
+    <!-- Équipe A -->
+    <div class="control-block">
+      <div class="control-title">Équipe A</div>
+      <div class="team-display-v1" id="teamA-display">
+        <div class="team-logo-preview empty-logo" id="teamA-logo"></div>
+        <div class="team-info">
+          <div class="team-name" id="teamA-name">Aucune équipe</div>
+          <button id="teamA-btn">Choisir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Équipe B -->
+    <div class="control-block">
+      <div class="control-title">Équipe B</div>
+      <div class="team-display-v1" id="teamB-display">
+        <div class="team-logo-preview empty-logo" id="teamB-logo"></div>
+        <div class="team-info">
+          <div class="team-name" id="teamB-name">Aucune équipe</div>
+          <button id="teamB-btn">Choisir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score A -->
+    <div class="control-block">
+      <div class="control-title">Score Équipe A</div>
+      <input type="number" id="inputScoreA" min="0" max="9" value="0">
+    </div>
+
+    <!-- Score B -->
+    <div class="control-block">
+      <div class="control-title">Score Équipe B</div>
+      <input type="number" id="inputScoreB" min="0" max="9" value="0">
+    </div>
+
+    <!-- Info droite -->
+    <div class="control-block">
+      <div class="control-title">Info droite</div>
+      <input type="text" id="inputInfo2" placeholder="Ex: JOURNÉE 13" value="JOURNÉE 13">
+    </div>
+
+    <!-- Compétition -->
+    <div class="control-block">
+      <div class="control-title">Compétition</div>
+      <select id="competitionSelect" class="competition-select">
+        <optgroup label="National">
+          <option value="NATIONAL 1">National 1</option>
+          <option value="NATIONAL 2">National 2</option>
+          <option value="NATIONAL 3">National 3</option>
+        </optgroup>
+        <optgroup label="Régional">
+          <option value="RÉGIONAL 1">Régional 1</option>
+          <option value="RÉGIONAL 2">Régional 2</option>
+          <option value="RÉGIONAL 3">Régional 3</option>
+        </optgroup>
+        <optgroup label="Départemental">
+          <option value="DÉPARTEMENTAL 1">Départemental 1</option>
+          <option value="DÉPARTEMENTAL 2">Départemental 2</option>
+          <option value="DÉPARTEMENTAL 3">Départemental 3</option>
+          <option value="DÉPARTEMENTAL 4">Départemental 4</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <!-- Inverser -->
+    <div class="control-block">
+      <div class="control-title">Actions rapides</div>
+      <button id="btnSwapTeams" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); width: 100%;">
+        ⇄ Inverser les équipes
+      </button>
+    </div>
+
+    <!-- Couleur principale -->
+    <div class="control-block">
+      <div class="control-title">Couleur principale</div>
+      <div class="color-picker-wrapper">
+        <input type="color" id="gradientColorPicker" value="#cc0000">
+        <label for="gradientColorPicker" class="color-picker-label">Choisir une couleur</label>
+      </div>
+    </div>
+
+    <!-- Image de fond -->
+    <div class="control-block">
+      <div class="control-title">Importer image de fond</div>
+      <input type="file" id="fileInput" accept="image/*,.jpg,.jpeg,.png,.gif,.webp">
+    </div>
+
+    <!-- Recadrer -->
+    <div class="control-block">
+      <button id="btnRecadrer" disabled style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        Recadrer l'image
+      </button>
+    </div>
+
+    <!-- Zoom caché -->
+    <div class="control-block hidden">
+      <button id="btnZoom">Zoom image</button>
+      <div id="zoomControls" class="hidden">
+        <input type="range" id="zoomSlider" min="1" max="1.5" step="0.01" value="1">
+        <button id="btnCloseZoom">Fermer le zoom</button>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="control-block">
+      <div class="button-group">
+        <button id="btnExport" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); font-size: 15px; padding: 14px;">
+          Exporter
+        </button>
+        <button id="btnShare" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 15px; padding: 14px;">
+          Partager
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- MODAL SÉLECTION ÉQUIPE -->
+<div class="modal" id="clubModal">
+  <div class="modal-content">
+    <button class="modal-close-x" id="closeModalX">&times;</button>
+    <div id="searchView">
+      <div class="modal-title">Choisir une équipe</div>
+      <input type="text" class="club-search" id="clubSearchModal" placeholder="Rechercher une équipe...">
+      <div class="club-list" id="clubListModal"></div>
+      <button class="btn-add-club" id="btnShowAddClub">+ Ajouter un nouveau club</button>
+    </div>
+    <div id="addClubView" class="hidden">
+      <div class="modal-title">Ajouter un club</div>
+      <input type="text" id="newClubName" placeholder="Nom du club" class="input-field">
+      <input type="text" id="newClubAbbr" placeholder="Abreviation (3-4 lettres)" class="input-field" maxlength="4">
+      <div class="logo-upload-section">
+        <label class="logo-upload-label">
+          <span id="logoUploadText">Choisir un logo</span>
+          <input type="file" id="newClubLogo" accept="image/*" hidden>
+        </label>
+        <div class="logo-preview-small" id="newLogoPreview"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="btnCancelAdd">Annuler</button>
+        <button class="btn btn-primary" id="btnConfirmAdd">Ajouter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RECADRAGE -->
+<div class="recadrage-modal" id="recadrageModal">
+  <div class="recadrage-container">
+
+    <div class="recadrage-header">
+      <h2>Recadrer l'image</h2>
+      <p>1 doigt pour déplacer • 2 doigts pour zoomer</p>
+    </div>
+
+    <div class="recadrage-preview base-moderne" id="recadragePreview">
+      <img id="recadrageImage" class="recadrage-image">
+
+      <!-- Bande SVG courbe -->
+      <div class="m-score-section">
+        <svg class="m-score-bg-svg" viewBox="0 0 416 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path id="recadrage-scoreSvgPath" d="M 0 15 Q 208 65 416 15 L 416 160 L 0 160 Z" fill="#cc0000"/>
+        </svg>
+      </div>
+
+      <!-- Badge FULLTIME -->
+      <div class="m-fulltime-badge">FULLTIME</div>
+
+      <!-- Logos et scores -->
+      <div class="vertA empty" id="recadrage-logoA"></div>
+      <div class="vertB empty" id="recadrage-logoB"></div>
+      <div class="scoreA" id="recadrage-displayScoreA">0</div>
+      <div class="trait">-</div>
+      <div class="scoreB" id="recadrage-displayScoreB">0</div>
+
+      <!-- Barre blanche du bas -->
+      <div class="m-bottom-bar">
+        <div class="info info1" id="recadrage-info1">NATIONAL 1</div>
+        <div class="info AvsB" id="recadrage-matchTitle">Équipe A - Équipe B</div>
+        <div class="info info2" id="recadrage-info2">JOURNÉE 13</div>
+      </div>
+
+      <div class="recadrage-grid"></div>
+    </div>
+
+    <div class="recadrage-controls">
+      <div class="zoom-control">
+        <label>Zoom</label>
+        <input type="range" id="recadrageZoomSlider" min="1" max="3" step="0.01" value="1">
+      </div>
+      <div class="recadrage-actions">
+        <button id="btnAnnulerRecadrage">Annuler</button>
+        <button id="btnValiderRecadrage">Valider</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="../../../js/supabase-config.js"></script>
+<script src="../../../js/auth.js"></script>
+<script src="../../../js/clubs.js"></script>
+<script src="../../../js/clubs-supabase.js"></script>
+<script src="editor-moderne.js"></script>
+<script>
+  const btnProfile = document.querySelector('.btn-profile');
+  (async () => {
+    const session = await getSession();
+    if (session) {
+      const user = session.user;
+      const nomUtilisateur = user.user_metadata?.nom_utilisateur || user.email.split('@')[0];
+      btnProfile.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        ${nomUtilisateur}
+      `;
+      btnProfile.href = '../../../profile.html';
+      btnProfile.title = 'Voir mon profil';
+    } else if (estModeInvite()) {
+      btnProfile.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Invité
+      `;
+      btnProfile.href = '../../../index.html';
+      btnProfile.title = 'Connectez-vous pour accéder à votre profil';
+    } else {
+      window.location.href = '../../../index.html';
+    }
+  })();
+</script>
+
+</body>
+</html>
