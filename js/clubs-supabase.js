@@ -197,33 +197,34 @@ async function getClubFavoriSupabase() {
     const user = await getUser();
     if (!user) return null;
 
-    const { data, error } = await supabaseClient
+    const { data: profile, error: profileError } = await supabaseClient
       .from('user_profiles')
-      .select(`
-        club_favori_id,
-        clubs (
-          id,
-          nom,
-          nom_court,
-          logo_url,
-          couleur_primaire,
-          couleur_secondaire
-        )
-      `)
+      .select('club_favori_id, nom_utilisateur')
       .eq('id', user.id)
       .single();
 
-    if (error || !data || !data.clubs) {
+    if (profileError || !profile || !profile.club_favori_id) {
+      return null;
+    }
+
+    const { data: club, error: clubError } = await supabaseClient
+      .from('clubs')
+      .select('id, nom, nom_court, logo_url, couleur_primaire, couleur_secondaire')
+      .eq('id', profile.club_favori_id)
+      .single();
+
+    if (clubError || !club) {
       return null;
     }
 
     return {
-      id: data.clubs.id,
-      nom: data.clubs.nom,
-      abbr: data.clubs.nom_court,
-      logo: data.clubs.logo_url,
-      couleurPrimaire: data.clubs.couleur_primaire,
-      couleurSecondaire: data.clubs.couleur_secondaire
+      id: club.id,
+      nom: club.nom,
+      abbr: club.nom_court,
+      logo: club.logo_url,
+      couleurPrimaire: club.couleur_primaire,
+      couleurSecondaire: club.couleur_secondaire,
+      nom_utilisateur: profile.nom_utilisateur
     };
   } catch (error) {
     console.error('Erreur récupération club favori:', error);

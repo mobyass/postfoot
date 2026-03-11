@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Post Foot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0d0d1a;
+      color: #fff;
+      min-height: 100vh;
+      padding: 40px 24px;
+    }
+
+    /* ===== HEADER ===== */
+    .admin-header {
+      max-width: 1100px;
+      margin: 0 auto 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .admin-header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .admin-header a {
+      color: rgba(255,255,255,0.4);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .admin-header a:hover { color: #fff; }
+
+    /* ===== TABS ===== */
+    .admin-tabs {
+      max-width: 1100px;
+      margin: 0 auto 28px;
+      display: flex;
+      gap: 6px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 4px;
+      width: fit-content;
+    }
+
+    .admin-tab {
+      padding: 8px 24px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .admin-tab.active {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .admin-tab:hover:not(.active) {
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ===== STATS ===== */
+    .stats-row {
+      max-width: 1100px;
+      margin: 0 auto 32px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    /* ===== SECTION ===== */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto 48px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .section-count {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 12px 18px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.35);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.02);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+    td {
+      padding: 14px 18px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    /* ===== LOGO CELL ===== */
+    .logo-cell {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .logo-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .logo-cell span {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .club-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .club-name { font-weight: 600; }
+    .club-abbr {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 500;
+      background: rgba(255,255,255,0.07);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ===== EDITION INLINE CLUB ===== */
+    .inline-input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      font-family: inherit;
+      padding: 5px 9px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .inline-input:focus { border-color: rgba(102,126,234,0.5); }
+    .inline-input.name-input { width: 160px; }
+    .inline-input.abbr-input { width: 60px; text-transform: uppercase; }
+    .inline-input:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+
+    .logo-cell.clickable {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .logo-cell.clickable:hover::after {
+      content: '✎';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border-radius: 8px;
+    }
+
+    .btn-save-club {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(102,126,234,0.4);
+      background: transparent;
+      color: #667eea;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-save-club:hover { background: rgba(102,126,234,0.1); }
+
+    tr.unvalidated { background: rgba(255,200,0,0.03); }
+    tr.unvalidated td:first-child { border-left: 2px solid rgba(255,200,0,0.4); }
+
+    /* ===== CHECKBOX VALIDATION ===== */
+    .check-toggle {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 2px solid rgba(255,255,255,0.2);
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #34c759;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .check-toggle.checked {
+      background: rgba(52,199,89,0.2);
+      border-color: #34c759;
+    }
+
+    .check-toggle:not(.checked):hover {
+      border-color: rgba(52,199,89,0.6);
+      background: rgba(52,199,89,0.08);
+    }
+
+    .check-toggle.loading-check {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .badge-unvalidated {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255,200,0,0.15);
+      color: rgba(255,200,0,0.9);
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    .separator-row td {
+      padding: 8px 18px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ===== BADGES ===== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-normal {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5);
+    }
+
+    .badge-premium {
+      background: rgba(255, 193, 7, 0.15);
+      color: #ffc107;
+    }
+
+    /* ===== TOGGLE BUTTON ===== */
+    .btn-toggle {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-toggle:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .btn-toggle.make-premium {
+      border-color: rgba(255,193,7,0.3);
+      color: #ffc107;
+    }
+
+    .btn-toggle.make-normal {
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    /* ===== LOADING ===== */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: rgba(255,255,255,0.3);
+      font-size: 14px;
+    }
+
+    /* ===== PASSWORD SCREEN ===== */
+    #passwordScreen {
+      position: fixed;
+      inset: 0;
+      background: #0d0d1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .password-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 40px;
+      width: 340px;
+      text-align: center;
+    }
+
+    .password-box h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .password-box p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 24px;
+    }
+
+    .password-box input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      text-align: center;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+
+    .password-box button {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .password-error {
+      color: #ff5555;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    /* ===== BOUTON VISUEL ===== */
+    .btn-visuel {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(102,126,234,0.4);
+      background: transparent;
+      color: #667eea;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-left: 8px;
+    }
+
+    .btn-visuel:hover { background: rgba(102,126,234,0.1); }
+    .btn-visuel.has-visuel { border-color: rgba(52,199,89,0.4); color: #34c759; }
+    .btn-visuel.has-visuel:hover { background: rgba(52,199,89,0.1); }
+
+    /* ===== MODAL VISUEL ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: #13131f;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-top {
+      padding: 20px 24px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .modal-top h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .modal-top p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 16px;
+    }
+
+    .modal-name-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-name-row input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    /* Tabs */
+    .modal-tabs {
+      display: flex;
+      gap: 4px;
+      padding-bottom: 0;
+    }
+
+    .modal-tab {
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .modal-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    /* Editor area */
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 24px;
+    }
+
+    .tab-panel { display: none; flex-direction: column; gap: 10px; }
+    .tab-panel.active { display: flex; }
+
+    .file-upload-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-upload-file {
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 7px;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-upload-file:hover { background: rgba(255,255,255,0.12); }
+
+    .file-name {
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .file-name.loaded { color: #34c759; }
+
+    .tab-panel textarea {
+      width: 100%;
+      min-height: 260px;
+      padding: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+
+    .tab-panel textarea:focus { border-color: rgba(102,126,234,0.4); }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.07);
+      border: none;
+      border-radius: 8px;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .btn-save {
+      padding: 10px 24px;
+      background: #667eea;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .btn-save:hover { background: #5a71d6; }
+
+    /* Boutons inline dans la table */
+    .btn-icon {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-icon-hide { color: rgba(255,200,0,0.8); border-color: rgba(255,200,0,0.3); }
+    .btn-icon-hide:hover { background: rgba(255,200,0,0.08); }
+    .btn-icon-show { color: rgba(255,255,255,0.4); border-color: rgba(255,255,255,0.1); }
+    .btn-icon-show:hover { background: rgba(255,255,255,0.06); }
+    .btn-icon-delete { color: rgba(255,80,80,0.8); border-color: rgba(255,80,80,0.3); }
+    .btn-icon-delete:hover { background: rgba(255,80,80,0.1); }
+
+    .actions-cell { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+    /* ===== BOUTON MODIFIER CLUB ===== */
+    .btn-edit-club {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-edit-club:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* ===== MODAL EDITION CLUB ===== */
+    #editClubModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 20px;
+    }
+
+    .edit-club-box {
+      background: #13131f;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .edit-club-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .edit-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .edit-logo-preview {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.07);
+      border: 1px dashed rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .edit-logo-preview:hover { border-color: rgba(255,255,255,0.4); }
+    .edit-logo-preview span { font-size: 20px; color: rgba(255,255,255,0.3); }
+
+    .edit-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .edit-field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .edit-field input {
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .edit-field input:focus { border-color: rgba(102,126,234,0.5); }
+
+    .edit-club-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Protection mot de passe -->
+  <div id="passwordScreen">
+    <div class="password-box">
+      <h2>Admin</h2>
+      <p>Accès réservé</p>
+      <input type="password" id="adminPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()">
+      <button onclick="checkPassword()">Entrer</button>
+      <div class="password-error" id="passError"></div>
+    </div>
+  </div>
+
+  <!-- Contenu admin -->
+  <div id="adminContent" style="display:none">
+
+    <div class="admin-header">
+      <h1>Admin</h1>
+      <a href="selection.html">← Retour</a>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" id="tabClubs" onclick="switchSection('clubs')">Clubs</button>
+      <button class="admin-tab" id="tabComptes" onclick="switchSection('comptes')">Comptes</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Clubs</div>
+        <div class="stat-value" id="statClubs">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Comptes</div>
+        <div class="stat-value" id="statComptes">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Premium</div>
+        <div class="stat-value" id="statPremium">—</div>
+      </div>
+    </div>
+
+    <!-- Section Clubs -->
+    <div class="section" id="sectionClubs">
+      <div class="section-header">
+        <h2 class="section-title">Clubs</h2>
+        <span class="section-count" id="clubCount"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Logo</th><th>Nom</th><th>Abréviation</th><th>Utilisations</th><th>Validé</th></tr>
+          </thead>
+          <tbody id="clubsBody">
+            <tr><td colspan="4" class="loading">Chargement…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section Comptes -->
+    <div class="section" id="sectionComptes" style="display:none">
+      <div class="section-header">
+        <h2 class="section-title">Comptes</h2>
+        <span class="section-count" id="usersCount"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Club</th>
+              <th>Abonnement</th>
+              <th>Visuel</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="usersBody">
+            <tr><td colspan="4" class="loading">Chargement…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal édition club -->
+  <div id="editClubModal" style="display:none" onclick="if(event.target===this)closeEditClub()"
+    style="position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px">
+    <div class="edit-club-box">
+      <h3>Modifier le club</h3>
+      <div class="edit-logo-row">
+        <div class="edit-logo-preview" id="editLogoPreview" onclick="editLogoClick()" title="Changer le logo"><span>?</span></div>
+        <span style="font-size:12px;color:rgba(255,255,255,0.35)">Cliquer pour changer le logo</span>
+        <input type="file" id="editLogoInput" accept="image/*" style="display:none">
+      </div>
+      <div class="edit-field">
+        <label>Nom</label>
+        <input type="text" id="editNom" placeholder="Nom du club">
+      </div>
+      <div class="edit-field">
+        <label>Abréviation</label>
+        <input type="text" id="editAbbr" placeholder="ABR" maxlength="6" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="edit-club-footer">
+        <button class="btn-cancel" onclick="closeEditClub()">Annuler</button>
+        <button class="btn-save" id="btnSaveEditClub" onclick="saveEditClub()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal visuel -->
+  <div class="modal-overlay" id="visuelModal" style="display:none" onclick="if(event.target===this) closeModal()">
+    <div class="modal-box">
+      <div class="modal-top">
+        <h3 id="modalTitle">Assigner un visuel</h3>
+        <p id="modalSubtitle">Le code s'affichera comme carte dans selection.html pour cet utilisateur</p>
+        <div class="modal-name-row">
+          <input type="text" id="templateName" placeholder="Nom du visuel (ex: FC Monclub)">
+        </div>
+        <div class="modal-tabs">
+          <div class="modal-tab active" onclick="switchTab('html')">HTML</div>
+          <div class="modal-tab" onclick="switchTab('css')">CSS</div>
+          <div class="modal-tab" onclick="switchTab('js')">JS</div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="tab-panel active" id="tab-html">
+          <div class="file-upload-row">
+            <button class="btn-upload-file" onclick="triggerFile('fileHtml')">📂 Importer .html</button>
+            <input type="file" id="fileHtml" accept=".html,.htm" style="display:none" onchange="loadFile(this,'codeHtml','fileNameHtml')">
+            <span class="file-name" id="fileNameHtml">Aucun fichier</span>
+          </div>
+          <textarea id="codeHtml" placeholder="<!-- Contenu HTML de l'éditeur -->"></textarea>
+        </div>
+        <div class="tab-panel" id="tab-css">
+          <div class="file-upload-row">
+            <button class="btn-upload-file" onclick="triggerFile('fileCss')">📂 Importer .css</button>
+            <input type="file" id="fileCss" accept=".css" style="display:none" onchange="loadFile(this,'codeCss','fileNameCss')">
+            <span class="file-name" id="fileNameCss">Aucun fichier</span>
+          </div>
+          <textarea id="codeCss" placeholder="/* Styles CSS */"></textarea>
+        </div>
+        <div class="tab-panel" id="tab-js">
+          <div class="file-upload-row">
+            <button class="btn-upload-file" onclick="triggerFile('fileJs')">📂 Importer .js</button>
+            <input type="file" id="fileJs" accept=".js" style="display:none" onchange="loadFile(this,'codeJs','fileNameJs')">
+            <span class="file-name" id="fileNameJs">Aucun fichier</span>
+          </div>
+          <textarea id="codeJs" placeholder="// JavaScript"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+        <button class="btn-save" onclick="saveVisuel()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/supabase-config.js"></script>
+  <script>
+    // ===== MOT DE PASSE ADMIN =====
+    const ADMIN_PASSWORD = 'igpost2024';
+
+    function checkPassword() {
+      const val = document.getElementById('adminPassword').value;
+      if (val === ADMIN_PASSWORD) {
+        document.getElementById('passwordScreen').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        loadAll();
+      } else {
+        document.getElementById('passError').textContent = 'Mot de passe incorrect';
+      }
+    }
+
+    // ===== TABS =====
+    function switchSection(section) {
+      document.getElementById('sectionClubs').style.display = section === 'clubs' ? '' : 'none';
+      document.getElementById('sectionComptes').style.display = section === 'comptes' ? '' : 'none';
+      document.getElementById('tabClubs').classList.toggle('active', section === 'clubs');
+      document.getElementById('tabComptes').classList.toggle('active', section === 'comptes');
+    }
+
+    // ===== CHARGEMENT =====
+    async function loadAll() {
+      await Promise.all([loadClubs(), loadUsers()]);
+    }
+
+    // ===== CLUBS =====
+    async function loadClubs() {
+      const { data, error } = await supabaseClient
+        .from('clubs')
+        .select('id, nom, nom_court, logo_url, nb_utilisations, validated')
+        .order('nb_utilisations', { ascending: false });
+
+      if (error || !data) return;
+
+      document.getElementById('statClubs').textContent = data.length;
+
+      const unvalidated = data.filter(c => !c.validated);
+      const validated = data.filter(c => c.validated);
+
+      document.getElementById('clubCount').textContent = `${validated.length} validés · ${unvalidated.length} à valider`;
+
+      const clubRow = (club) => `
+        <tr>
+          <td>
+            <div class="logo-cell" style="width:40px;height:40px">
+              ${club.logo_url
+                ? `<img src="${club.logo_url}" onerror="this.parentElement.innerHTML='<span>?</span>'">`
+                : `<span>?</span>`}
+            </div>
+          </td>
+          <td>${club.nom}</td>
+          <td><span class="club-abbr">${club.nom_court || '—'}</span></td>
+          <td style="color:rgba(255,255,255,0.4);font-size:13px">${club.nb_utilisations || 0}</td>
+          <td>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button
+                class="check-toggle ${club.validated ? 'checked' : ''}"
+                onclick="toggleValidation('${club.id}', ${!!club.validated})"
+                title="${club.validated ? 'Invalider' : 'Valider'}"
+              >${club.validated ? '✓' : ''}</button>
+              ${!club.validated ? `<button class="btn-edit-club" onclick="openEditClub('${club.id}', '${club.nom.replace(/'/g, "\\'")}', '${(club.nom_court||'').replace(/'/g, "\\'")}', '${(club.logo_url||'').replace(/'/g, "\\'")}')">Modifier</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+
+      let html = '';
+
+      if (unvalidated.length > 0) {
+        html += `<tr class="separator-row"><td colspan="5">À valider (${unvalidated.length})</td></tr>`;
+        html += unvalidated.map(clubRow).join('');
+      }
+
+      if (validated.length > 0) {
+        html += `<tr class="separator-row"><td colspan="5">Clubs validés (${validated.length})</td></tr>`;
+        html += validated.map(clubRow).join('');
+      }
+
+      if (!html) {
+        html = '<tr><td colspan="5" class="loading">Aucun club</td></tr>';
+      }
+
+      document.getElementById('clubsBody').innerHTML = html;
+    }
+
+    async function toggleValidation(id, currentVal) {
+      const { error } = await supabaseClient
+        .from('clubs')
+        .update({ validated: !currentVal })
+        .eq('id', id);
+
+      if (!error) await loadClubs();
+    }
+
+    // ===== MODAL EDITION CLUB =====
+    let editClubId = null;
+    let editLogoBase64 = null;
+
+    function openEditClub(id, nom, abbr, logoUrl) {
+      editClubId = id;
+      editLogoBase64 = null;
+      document.getElementById('editNom').value = nom;
+      document.getElementById('editAbbr').value = abbr;
+      const preview = document.getElementById('editLogoPreview');
+      preview.innerHTML = logoUrl
+        ? `<img src="${logoUrl}" style="width:100%;height:100%;object-fit:contain">`
+        : `<span>?</span>`;
+      document.getElementById('editClubModal').style.display = 'flex';
+    }
+
+    function closeEditClub() {
+      document.getElementById('editClubModal').style.display = 'none';
+      editClubId = null;
+      editLogoBase64 = null;
+    }
+
+    function editLogoClick() {
+      document.getElementById('editLogoInput').click();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('editLogoInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          editLogoBase64 = e.target.result;
+          const preview = document.getElementById('editLogoPreview');
+          preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:contain">`;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    async function saveEditClub() {
+      const nom = document.getElementById('editNom').value.trim();
+      const abbr = document.getElementById('editAbbr').value.trim().toUpperCase();
+      if (!nom) return;
+
+      const btn = document.getElementById('btnSaveEditClub');
+      btn.textContent = '…';
+      btn.disabled = true;
+
+      const updates = { nom, nom_court: abbr };
+      if (editLogoBase64) updates.logo_url = editLogoBase64;
+
+      const { error } = await supabaseClient.from('clubs').update(updates).eq('id', editClubId);
+
+      if (error) {
+        alert('Erreur : ' + error.message);
+        btn.textContent = 'Enregistrer';
+        btn.disabled = false;
+        return;
+      }
+
+      // Mettre à jour aussi nom_utilisateur dans user_profiles pour les utilisateurs de ce club
+      await supabaseClient
+        .from('user_profiles')
+        .update({ nom_utilisateur: nom })
+        .eq('club_favori_id', editClubId);
+
+      closeEditClub();
+      await Promise.all([loadClubs(), loadUsers()]);
+    }
+
+    // ===== COMPTES =====
+    async function loadUsers() {
+      // Essai via fonction SQL (avec emails depuis auth.users)
+      let data, error;
+      ({ data, error } = await supabaseClient.rpc('get_users_admin'));
+
+      // Fallback : requête directe sur user_profiles
+      if (error || !data) {
+        ({ data, error } = await supabaseClient
+          .from('user_profiles')
+          .select('id, email, subscription, has_custom_template, custom_template_id, custom_template_name, custom_template_visible, club_favori_id')
+          .order('id', { ascending: false }));
+      }
+
+      if (error) {
+        document.getElementById('usersBody').innerHTML = `<tr><td colspan="5" class="loading">Erreur: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        document.getElementById('usersBody').innerHTML = '<tr><td colspan="5" class="loading">Aucun compte</td></tr>';
+        return;
+      }
+
+      // Récupérer les clubs nécessaires séparément
+      const clubIds = [...new Set(data.map(u => u.club_favori_id).filter(Boolean))];
+      let clubsMap = {};
+      if (clubIds.length > 0) {
+        const { data: clubsData } = await supabaseClient
+          .from('clubs')
+          .select('id, nom, logo_url')
+          .in('id', clubIds);
+        if (clubsData) clubsData.forEach(c => { clubsMap[c.id] = c; });
+      }
+
+      // Attacher le club à chaque profil
+      const enriched = data.map(u => ({ ...u, clubs: clubsMap[u.club_favori_id] || null }));
+
+      const premiumCount = data.filter(u => u.subscription === 'premium').length;
+      document.getElementById('statComptes').textContent = data.length;
+      document.getElementById('statPremium').textContent = premiumCount;
+      document.getElementById('usersCount').textContent = `${data.length} comptes`;
+
+      renderUsers(enriched);
+    }
+
+    function renderUsers(data) {
+      document.getElementById('usersBody').innerHTML = data.map(user => {
+        const isPremium = user.subscription === 'premium';
+        const hasVisuel = user.has_custom_template;
+        const club = user.clubs;
+        return `
+          <tr id="row-${user.id}">
+            <td>${user.email || '<span style="color:rgba(255,255,255,0.3)">—</span>'}</td>
+            <td>
+              ${club
+                ? `<div class="club-row">
+                     <div class="logo-cell" style="width:28px;height:28px">
+                       ${club.logo_url ? `<img src="${club.logo_url}" onerror="this.parentElement.innerHTML='<span>?</span>'">` : '<span>?</span>'}
+                     </div>
+                     <span>${club.nom}</span>
+                   </div>`
+                : '<span style="color:rgba(255,255,255,0.3)">—</span>'}
+            </td>
+            <td>
+              <span class="badge ${isPremium ? 'badge-premium' : 'badge-normal'}">
+                ${isPremium ? 'Premium' : 'Normal'}
+              </span>
+            </td>
+            <td>
+              <div class="actions-cell">
+                <button
+                  class="btn-visuel ${hasVisuel ? 'has-visuel' : ''}"
+                  onclick="openVisuelModal('${user.id}', '${user.email || ''}', '${user.custom_template_id || ''}', '${(user.custom_template_name || '').replace(/'/g, "\\'")}')"
+                >
+                  ${hasVisuel ? '✏ ' + (user.custom_template_name || 'Visuel') : '+ Assigner'}
+                </button>
+                ${hasVisuel ? `
+                  <button
+                    class="btn-icon ${user.custom_template_visible === false ? 'btn-icon-show' : 'btn-icon-hide'}"
+                    onclick="toggleVisibility('${user.id}', ${user.custom_template_visible !== false})"
+                    title="${user.custom_template_visible === false ? 'Afficher pour l\'utilisateur' : 'Masquer pour l\'utilisateur'}"
+                  >${user.custom_template_visible === false ? '👁 Afficher' : '🙈 Masquer'}</button>
+                  <button
+                    class="btn-icon btn-icon-delete"
+                    onclick="deleteVisuel('${user.id}', '${user.custom_template_id || ''}')"
+                    title="Supprimer le visuel"
+                  >🗑 Suppr.</button>
+                ` : ''}
+              </div>
+            </td>
+            <td>
+              <div style="display:flex;gap:6px;align-items:center">
+                <button
+                  class="btn-toggle ${isPremium ? 'make-normal' : 'make-premium'}"
+                  onclick="toggleSubscription('${user.id}', '${user.subscription || 'normal'}')"
+                >
+                  ${isPremium ? 'Passer Normal' : 'Passer Premium'}
+                </button>
+                <button
+                  class="btn-icon btn-icon-delete"
+                  onclick="deleteAccount('${user.id}', '${user.email || ''}')"
+                  title="Supprimer ce compte"
+                >🗑</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ===== MODAL VISUEL =====
+    let currentUserId = null;
+    let currentTemplateId = null;
+
+    // ===== UPLOAD FICHIERS =====
+    function triggerFile(inputId) {
+      document.getElementById(inputId).click();
+    }
+
+    function loadFile(input, textareaId, labelId) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById(textareaId).value = e.target.result;
+        const label = document.getElementById(labelId);
+        label.textContent = file.name;
+        label.className = 'file-name loaded';
+      };
+      reader.readAsText(file);
+    }
+
+    // ===== SUPPRIMER COMPTE =====
+    async function deleteAccount(userId, email) {
+      if (!confirm(`Supprimer le compte "${email}" ?\n\nCette action est irréversible.`)) return;
+
+      const { error } = await supabaseClient.rpc('delete_user_account', { user_id: userId });
+
+      if (error) {
+        alert('Erreur : ' + error.message + '\n\nAssure-toi d\'avoir créé la fonction SQL dans Supabase.');
+        return;
+      }
+
+      await loadUsers();
+    }
+
+    // ===== MASQUER / AFFICHER =====
+    async function toggleVisibility(userId, currentlyVisible) {
+      const newVisible = !currentlyVisible;
+      const { error } = await supabaseClient
+        .from('user_profiles')
+        .update({ custom_template_visible: newVisible })
+        .eq('id', userId);
+      if (!error) await loadUsers();
+    }
+
+    // ===== SUPPRIMER =====
+    async function deleteVisuel(userId, templateId) {
+      if (!confirm('Supprimer le visuel de cet utilisateur ?')) return;
+
+      if (templateId) {
+        await supabaseClient.from('custom_templates').delete().eq('id', templateId);
+      }
+
+      await supabaseClient.from('user_profiles').update({
+        has_custom_template: false,
+        custom_template_id: null,
+        custom_template_name: null,
+        custom_template_visible: true
+      }).eq('id', userId);
+
+      await loadUsers();
+    }
+
+    async function openVisuelModal(userId, email, templateId, templateName) {
+      currentUserId = userId;
+      currentTemplateId = templateId || null;
+
+      document.getElementById('modalSubtitle').textContent = email;
+      document.getElementById('templateName').value = templateName || '';
+      document.getElementById('codeHtml').value = '';
+      document.getElementById('codeCss').value = '';
+      document.getElementById('codeJs').value = '';
+      ['Html','Css','Js'].forEach(ext => {
+        const lbl = document.getElementById('fileName' + ext);
+        lbl.textContent = 'Aucun fichier';
+        lbl.className = 'file-name';
+      });
+
+      // Charger le contenu existant si un template est déjà assigné
+      if (templateId) {
+        const { data } = await supabaseClient
+          .from('custom_templates')
+          .select('html, css, js, name')
+          .eq('id', templateId)
+          .single();
+        if (data) {
+          document.getElementById('codeHtml').value = data.html || '';
+          document.getElementById('codeCss').value = data.css || '';
+          document.getElementById('codeJs').value = data.js || '';
+          document.getElementById('templateName').value = data.name || templateName || '';
+        }
+      }
+
+      switchTab('html');
+      document.getElementById('visuelModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('visuelModal').style.display = 'none';
+      currentUserId = null;
+      currentTemplateId = null;
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.modal-tab').forEach((t, i) => {
+        t.classList.toggle('active', ['html','css','js'][i] === tab);
+      });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    async function saveVisuel() {
+      const name = document.getElementById('templateName').value.trim() || 'Mon Template';
+      const html = document.getElementById('codeHtml').value;
+      const css = document.getElementById('codeCss').value;
+      const js = document.getElementById('codeJs').value;
+
+      const saveBtn = document.querySelector('.btn-save');
+      saveBtn.textContent = 'Enregistrement…';
+      saveBtn.disabled = true;
+
+      let templateId = currentTemplateId;
+
+      if (templateId) {
+        // Mise à jour
+        await supabaseClient.from('custom_templates').update({ name, html, css, js }).eq('id', templateId);
+      } else {
+        // Création
+        const { data } = await supabaseClient
+          .from('custom_templates')
+          .insert({ user_id: currentUserId, name, html, css, js })
+          .select('id')
+          .single();
+        if (data) templateId = data.id;
+      }
+
+      // Mettre à jour user_profiles
+      await supabaseClient.from('user_profiles').update({
+        has_custom_template: true,
+        custom_template_id: templateId,
+        custom_template_name: name
+      }).eq('id', currentUserId);
+
+      // Mettre à jour le bouton dans la ligne
+      const row = document.getElementById(`row-${currentUserId}`);
+      if (row) {
+        const btn = row.querySelector('.btn-visuel');
+        btn.className = 'btn-visuel has-visuel';
+        btn.textContent = '✓ ' + name;
+        btn.setAttribute('onclick', `openVisuelModal('${currentUserId}', '${document.getElementById('modalSubtitle').textContent}', '${templateId}', '${name.replace(/'/g, "\\'")}')`);
+      }
+
+      saveBtn.textContent = 'Enregistrer';
+      saveBtn.disabled = false;
+      closeModal();
+    }
+
+    async function toggleSubscription(userId, currentSub) {
+      const newSub = currentSub === 'premium' ? 'normal' : 'premium';
+
+      const { error } = await supabaseClient
+        .from('user_profiles')
+        .update({ subscription: newSub })
+        .eq('id', userId);
+
+      if (!error) {
+        // Recharger juste la ligne
+        const row = document.getElementById(`row-${userId}`);
+        const isPremium = newSub === 'premium';
+        row.querySelector('.badge').className = `badge ${isPremium ? 'badge-premium' : 'badge-normal'}`;
+        row.querySelector('.badge').textContent = isPremium ? 'Premium' : 'Normal';
+        const btn = row.querySelector('.btn-toggle');
+        btn.className = `btn-toggle ${isPremium ? 'make-normal' : 'make-premium'}`;
+        btn.textContent = isPremium ? 'Passer Normal' : 'Passer Premium';
+        btn.setAttribute('onclick', `toggleSubscription('${userId}', '${newSub}')`);
+
+        // Mettre à jour le compteur premium
+        const premiumCount = document.querySelectorAll('.badge-premium').length;
+        document.getElementById('statPremium').textContent = premiumCount;
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -135,6 +135,7 @@
     </div>
     <div class="footer-bottom">
       <span class="footer-version">v1.0</span>
+      <a href="admin.html" class="footer-admin-link">admin</a>
     </div>
   </footer>
 
@@ -153,29 +154,38 @@
       if (session) {
         // Utilisateur connecté
         const user = session.user;
-        const nomUtilisateur = user.user_metadata?.nom_utilisateur || user.email.split('@')[0];
+
+        btnProfile.href = 'profile.html';
+        btnProfile.title = 'Voir mon profil';
+
+        // Récupérer profil depuis Supabase (source de vérité)
+        const { data: profile } = await supabaseClient
+          .from('user_profiles')
+          .select('has_custom_template, custom_template_id, custom_template_name, custom_template_visible, club_favori_id, nom_utilisateur')
+          .eq('id', user.id)
+          .single();
+
+        // Nom : priorité à nom_utilisateur (synchro avec clubs.nom par admin)
+        let nomClub = profile?.nom_utilisateur;
+        if (!nomClub && profile?.club_favori_id) {
+          const { data: clubData } = await supabaseClient
+            .from('clubs').select('nom').eq('id', profile.club_favori_id).single();
+          nomClub = clubData?.nom;
+        }
+        nomClub = nomClub || user.user_metadata?.nom_utilisateur || user.email.split('@')[0];
 
         btnProfile.innerHTML = `
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-          ${nomUtilisateur}
+          ${nomClub}
         `;
-        btnProfile.href = 'profile.html';
-        btnProfile.title = 'Voir mon profil';
 
-        // Vérifier si l'utilisateur a un template personnalisé
-        const { data: profile } = await supabaseClient
-          .from('user_profiles')
-          .select('has_custom_template, custom_template_id, custom_template_name')
-          .eq('id', user.id)
-          .single();
-
-        if (profile?.has_custom_template && profile?.custom_template_id) {
+        if (profile?.has_custom_template && profile?.custom_template_id && profile?.custom_template_visible !== false) {
           // Créer la carte du template personnalisé
           const customCard = document.createElement('a');
-          customCard.href = `editor-${profile.custom_template_id}.html`;
+          customCard.href = `editor-custom.html`;
           customCard.className = 'affiche-card custom-user-card';
           customCard.innerHTML = `
             <div class="affiche-preview preview-custom-user">

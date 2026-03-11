@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Éditeur</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #0d0d1a;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .loading-screen {
+      text-align: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 14px;
+    }
+    .error-screen {
+      text-align: center;
+      color: rgba(255,100,100,0.8);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="loading-screen" id="loadingScreen">Chargement…</div>
+  <div class="error-screen" id="errorScreen" style="display:none">
+    Impossible de charger le template.<br>
+    <a href="selection.html" style="color:#667eea; margin-top: 12px; display:inline-block">← Retour</a>
+  </div>
+
+  <script>
+    (async () => {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Récupérer le custom_template_id depuis user_profiles
+      const { data: profile, error: profileError } = await supabaseClient
+        .from('user_profiles')
+        .select('has_custom_template, custom_template_id, custom_template_name')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError || !profile?.has_custom_template || !profile?.custom_template_id) {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('errorScreen').style.display = 'block';
+        return;
+      }
+
+      // Récupérer le contenu du template
+      const { data: template, error: templateError } = await supabaseClient
+        .from('custom_templates')
+        .select('html, css, js, name')
+        .eq('id', profile.custom_template_id)
+        .single();
+
+      if (templateError || !template) {
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('errorScreen').style.display = 'block';
+        return;
+      }
+
+      // Injecter le CSS
+      if (template.css) {
+        const style = document.createElement('style');
+        style.textContent = template.css;
+        document.head.appendChild(style);
+      }
+
+      // Injecter le HTML
+      document.body.innerHTML = template.html || '';
+
+      // Mettre à jour le titre
+      document.title = template.name || 'Mon Éditeur';
+
+      // Exécuter le JS
+      if (template.js) {
+        const script = document.createElement('script');
+        script.textContent = template.js;
+        document.body.appendChild(script);
+      }
+    })();
+  </script>
+
+</body>
+</html>

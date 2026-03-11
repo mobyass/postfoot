@@ -816,7 +816,7 @@ input[type="color"]:hover {
   position: absolute;
   left: -8px;
   right: -8px;
-  bottom: 40px;
+  bottom: 20px;
   height: 160px;
   background: transparent;
 }
@@ -874,7 +874,7 @@ input[type="color"]:hover {
 /* Même largeur exacte que les deux logos réunis (120px) */
 .m-fulltime-badge {
   position: absolute;
-  bottom: 152px;
+  bottom: 132px;
   left: 50%;
   transform: translateX(-50%);
   width: 120px;
@@ -913,7 +913,7 @@ input[type="color"]:hover {
   width: 240px;
   height: 240px;
   position: absolute;
-  top: 78%;
+  top: 82%;
   transform: translateY(-50%) scale(0.25);
   background-repeat: no-repeat;
   background-position: center;
@@ -929,7 +929,7 @@ input[type="color"]:hover {
 /* ===== SCORES ===== */
 .scoreA, .scoreB {
   position: absolute;
-  top: 78%;
+  top: 82%;
   transform: translateY(-50%);
   color: white;
   font-weight: 900;

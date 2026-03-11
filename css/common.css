@@ -365,6 +365,17 @@ body {
   color: rgba(255, 255, 255, 0.3);
 }
 
+.footer-admin-link {
+  color: rgba(255, 255, 255, 0.15);
+  text-decoration: none;
+  font-size: 11px;
+  margin-left: 12px;
+}
+
+.footer-admin-link:hover {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .footer-contact {
   color: rgba(255, 255, 255, 0.5);
   display: flex;

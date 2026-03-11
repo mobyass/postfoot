@@ -293,11 +293,15 @@
         console.log('Résultat ajout club:', clubResult);
 
         if (clubResult.success) {
-          // Définir comme club favori avec l'ID utilisateur
+          // Définir comme club favori avec l'ID utilisateur + stocker email et subscription
           if (userId) {
             console.log('Définition club favori pour userId:', userId, 'clubId:', clubResult.data.id);
-            const favResult = await setClubFavoriSupabase(clubResult.data.id, userId);
-            console.log('Résultat setClubFavori:', favResult);
+            await supabaseClient.from('user_profiles').upsert({
+              id: userId,
+              email: email,
+              club_favori_id: clubResult.data.id,
+              subscription: 'normal'
+            });
           }
 
           // Sauvegarder en localStorage
